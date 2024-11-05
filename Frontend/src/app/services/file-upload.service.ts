@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, catchError } from 'rxjs';
 
 @Injectable({
@@ -14,10 +14,7 @@ export class FileUploadService {
     const formData = new FormData();
     formData.append('file', file);
 
-    return this.http.post(this.apiUrl, formData, {
-      headers: new HttpHeaders({
-       })
-    }).pipe(
+    return this.http.post(this.apiUrl, formData).pipe(
       catchError(this.handleError)
     );
   }
