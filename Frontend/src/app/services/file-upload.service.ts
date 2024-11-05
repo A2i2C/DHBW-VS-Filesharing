@@ -16,7 +16,7 @@ export class FileUploadService {
 
     return this.http.post(this.apiUrl, formData, {
       headers: new HttpHeaders({
-        'Content-Type': 'multipart/form-data'})
+       })
     }).pipe(
       catchError(this.handleError)
     );
