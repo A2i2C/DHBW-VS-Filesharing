@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/filehandler")
 @RequiredArgsConstructor
 public class FileHandlerController {
