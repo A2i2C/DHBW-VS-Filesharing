@@ -1,3 +1,4 @@
 Systemkomponenten-Diagramm
 
-![image](https://github.com/user-attachments/assets/01a732cb-5248-45aa-80cd-142c7e091887)
+![image](https://github.com/user-attachments/assets/d904d382-b55d-4961-b5b2-42781150ebf5)
+
