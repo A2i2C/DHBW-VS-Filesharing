@@ -8,22 +8,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
-      - mynetwork
-
-  minio:
-    image: minio/minio
-    container_name: minio
-    ports:
-      - "9000:9000"
-      - "9090:9090"
-    environment:
-      MINIO_ROOT_USER: "minioadmin"
-      MINIO_ROOT_PASSWORD: "minioadmin"
-    volumes:
-      - ./minio/data:/data
-    command: server /data --console-address ":9090"
-    networks:
-      - mynetwork
+      - minionetwork
 
   minio1:
     image: minio/minio
@@ -37,6 +22,8 @@ services:
     volumes:
       - ./minio/data1:/data
     command: server http://minio{1...3}/data --console-address ":9091"
+    networks:
+      - minionetwork
 
   minio2:
     image: minio/minio
@@ -50,6 +37,8 @@ services:
     volumes:
       - ./minio/data2:/data
     command: server http://minio{1...3}/data --console-address ":9092"
+    networks:
+      - minionetwork
 
   minio3:
     image: minio/minio
@@ -63,7 +52,9 @@ services:
     volumes:
       - ./minio/data3:/data
     command: server http://minio{1...3}/data --console-address ":9093"
+    networks:
+      - minionetwork
 
 networks:
-  mynetwork:
+  minionetwork:
     driver: bridge
