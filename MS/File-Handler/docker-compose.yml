@@ -1,13 +1,60 @@
 services:
-  minio:
-    image: minio/minio
-    container_name: minio
+  bff:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - 8080:8080
     environment:
-      MINIO_ROOT_USER: "minioadmin"
-      MINIO_ROOT_PASSWORD: "minioadmin"
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - minionetwork
+
+  minio1:
+    image: minio/minio
+    container_name: minio1
+    ports:
+      - "9001:9000"
+      - "9091:9090"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./minio/data:/data
-    command: server /data --console-address ":9090"
+      - ./minio/data1:/data
+    command: server http://minio{1...3}/data --console-address ":9091"
+    networks:
+      - minionetwork
+
+  minio2:
+    image: minio/minio
+    container_name: minio2
+    ports:
+      - "9002:9000"
+      - "9092:9090"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./minio/data2:/data
+    command: server http://minio{1...3}/data --console-address ":9092"
+    networks:
+      - minionetwork
+
+  minio3:
+    image: minio/minio
+    container_name: minio3
+    ports:
+      - "9003:9000"
+      - "9093:9090"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./minio/data3:/data
+    command: server http://minio{1...3}/data --console-address ":9093"
+    networks:
+      - minionetwork
+
+networks:
+  minionetwork:
+    driver: bridge
