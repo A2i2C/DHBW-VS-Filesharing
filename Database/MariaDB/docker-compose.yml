@@ -1,0 +1,18 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-compose
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
+      - MYSQL_DATABASE=${MARIA_DB_NAME}
+    ports:
+      - "3306:3306"
+    networks:
+      - mariadb_network
+    volumes:
+      - ./db/data:/data
+      - ./Database/MariaDB:/docker-entrypoint-initdb.d
+
+networks:
+  mariadb_network:
+    driver: bridge
