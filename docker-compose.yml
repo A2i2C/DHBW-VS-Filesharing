@@ -17,7 +17,7 @@ services:
       context: ./Database
     environment:
       - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
-      - MYSQL_DATABASE=${MARIA_DB_NAME}
+      - MYSQL_DATABASE=
     volumes:
       - ./Database/data:/var/lib/mysql
     ports:
@@ -29,6 +29,7 @@ services:
     container_name: Frontend
     build:
       context: ./Frontend
+    command: ng serve --host
     ports:
       - "4200:4200"
     networks:
@@ -44,10 +45,9 @@ services:
       - app-network
 
   minio:
-    container_name: MinIO
     image: minio/minio
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     command: server /data
     deploy:

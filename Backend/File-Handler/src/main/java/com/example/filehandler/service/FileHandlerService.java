@@ -45,7 +45,7 @@ public class FileHandlerService {
 
     private MinioClient connectMinioClient() {
         return MinioClient.builder()
-                .endpoint("http://minio1:9000")
+                .endpoint("http://minio:9000")
                 .credentials("minioadmin", "minioadmin")
                 .build();
     }
