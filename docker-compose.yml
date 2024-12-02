@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  file-handler:
+    build:
+      context: ./Backend/File-Handler
+    deploy:
+      replicas: 3  # Skaliere den File-Handler auf 3 Instanzen
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+
+  database:
+    container_name: MariaDB
+    build:
+      context: ./Database
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
+      - MYSQL_DATABASE=
+    volumes:
+      - ./Database/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  frontend:
+    container_name: Frontend
+    build:
+      context: ./Frontend
+    command: ng serve --host
+    ports:
+      - "4200:4200"
+    networks:
+      - app-network
+
+  nginx:
+    container_name: Nginx
+    build:
+      context: ./Nginx
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data
+    deploy:
+      replicas: 3  # Skaliere MinIO auf 3 Instanzen
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
