@@ -32,7 +32,7 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   login() {
-    this.authService.login(this.user).subscribe(
+    this.authService.login(this.user.value).subscribe(
       () => {
         // Redirect to home page after successful login
         this.router.navigate(['/']);

@@ -32,7 +32,7 @@ export class SignupComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   signup() {
-    this.authService.signup(this.user).subscribe(
+    this.authService.signup(this.user.value).subscribe(
       () => {
         // Redirect to login or home page after successful signup
         this.router.navigate(['/login']);
