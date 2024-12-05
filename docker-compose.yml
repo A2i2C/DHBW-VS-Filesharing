@@ -14,8 +14,8 @@ services:
   user-handler:
     build:
       context: ./Backend/User-Handler
-    ports:
-      - "8081:8081"
+    deploy:
+      replicas: 3  # Skaliere den User-Handler auf 3 Instanzen
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:

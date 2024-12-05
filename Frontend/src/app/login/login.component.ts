@@ -29,17 +29,20 @@ export class LoginComponent {
     password: new FormControl('')
   });
 
+  errorMessage = '';
+
   constructor(private authService: AuthService, private router: Router) { }
 
   login() {
-    this.authService.login(this.user.value).subscribe(
-      () => {
-        // Redirect to home page after successful login
-        this.router.navigate(['/']);
+    this.authService.login(this.user).subscribe({
+      next: () => {
+          console.log('Login successful');
+        this.router.navigate(['/home']);
       },
-      error => {
-        console.error('Error during login:', error);
+      error: (error) => {
+        console.error('Login failed. Status:', error.status);
+        this.errorMessage = 'Login failed. Please check your credentials.';
       }
-    );
+    });
   }
 }
