@@ -34,10 +34,13 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   login() {
-    this.authService.login(this.user).subscribe({
-      next: () => {
+    this.authService.login(this.user.value).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
           console.log('Login successful');
-        this.router.navigate(['/home']);
+          localStorage.setItem('username', this.user.value.username);
+          this.router.navigate(['/home']);
+        }
       },
       error: (error) => {
         console.error('Login failed. Status:', error.status);

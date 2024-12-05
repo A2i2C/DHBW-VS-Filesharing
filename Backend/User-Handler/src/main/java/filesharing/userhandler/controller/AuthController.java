@@ -1,18 +1,21 @@
 package filesharing.userhandler.controller;
 
-
 import filesharing.userhandler.model.MyUser;
 import filesharing.userhandler.model.MyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin("*")
-public class RegistrationController {
-
+public class AuthController {
     @Autowired
     private MyUserRepository myUserRepository;
 
@@ -26,4 +29,14 @@ public class RegistrationController {
         return myUserRepository.save(user);
     }
 
+    @PostMapping(value = "/login", consumes = "application/json")
+    public HttpStatus loginUser(@RequestBody MyUser user) {
+        Optional<MyUser> trueUser = myUserRepository.findByUsername(user.getUsername());
+        if (trueUser.isPresent()) {
+            if (passwordEncoder.matches(user.getPassword(), trueUser.get().getPassword())) {
+                return HttpStatus.OK;
+            }
+        }
+        return HttpStatus.UNAUTHORIZED;
+    }
 }

@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/api/user/signup", "/api/user/login", "/css/**", "/js/**").permitAll();
+                    registry.requestMatchers("/api/user/signup", "/api/user/login").permitAll();
                     registry.anyRequest().authenticated();
                 })
                 .build();
