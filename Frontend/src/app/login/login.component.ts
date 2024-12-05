@@ -6,6 +6,7 @@ import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatFormField} from '@angular/material/form-field';
 import {MatButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
+import {NavbarComponent} from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ import {MatInput} from '@angular/material/input';
     ReactiveFormsModule,
     MatFormField,
     MatButton,
-    MatInput
+    MatInput,
+    NavbarComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

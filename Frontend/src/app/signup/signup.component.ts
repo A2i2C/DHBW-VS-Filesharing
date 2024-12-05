@@ -6,6 +6,7 @@ import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
+import {NavbarComponent} from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-signup',
@@ -18,7 +19,8 @@ import {MatInput} from '@angular/material/input';
     MatCardTitle,
     MatFormField,
     MatInput,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NavbarComponent
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
