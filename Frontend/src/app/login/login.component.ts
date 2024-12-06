@@ -38,10 +38,15 @@ export class LoginComponent {
   login() {
     this.authService.login(this.user.value).subscribe({
       next: (response) => {
-        if (response.status === 200) {
-          console.log('Login successful');
-          localStorage.setItem('username', this.user.value.username);
+        console.log('Login successful:', response);
+        const responseBody = response.body;
+        if (responseBody && responseBody.token) {
+          localStorage.setItem('username', responseBody.username);
+          localStorage.setItem('token', responseBody.token);
           this.router.navigate(['/home']);
+        } else {
+          console.error('Invalid response structure');
+          this.errorMessage = 'Login failed. Invalid response from the server.';
         }
       },
       error: (error) => {

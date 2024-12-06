@@ -34,14 +34,14 @@ export class SignupComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   signup() {
-    this.authService.signup(this.user.value).subscribe(
-      () => {
-        // Redirect to login or home page after successful signup
+    this.authService.signup(this.user.value).subscribe({
+      next: () => {
+        // Redirect to login after successful signup
         this.router.navigate(['/login']);
       },
-      error => {
-        console.error('Error during signup:', error);
+      error: (err) => {
+        console.error('Error during signup:', err);
       }
-    );
+    });
   }
 }
