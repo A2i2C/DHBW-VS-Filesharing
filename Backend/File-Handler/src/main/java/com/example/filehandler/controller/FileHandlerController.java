@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/filehandler")
+@RequestMapping("/api/file")
 @RequiredArgsConstructor
 public class FileHandlerController {
 
