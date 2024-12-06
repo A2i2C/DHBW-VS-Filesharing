@@ -16,7 +16,7 @@ public class FileHandlerService {
     public void fileUpload(FileHandlerFileRequest uploadFileRequest) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
         MinioClient minioClient = connectMinioClient();
 
-        String bucketName = "java-demo-bucket";
+        String bucketName = "baumbucket";
         String objectName = uploadFileRequest.file().getOriginalFilename();
         String contentType = uploadFileRequest.file().getContentType();
 
@@ -27,6 +27,9 @@ public class FileHandlerService {
         if (!isBucketExist) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             System.out.println("Bucket created: " + bucketName);
+        }
+        else {
+            System.out.println("Bucket already exists: " + bucketName);
         }
 
         // Upload the file using InputStream
@@ -45,7 +48,7 @@ public class FileHandlerService {
 
     private MinioClient connectMinioClient() {
         return MinioClient.builder()
-                .endpoint("http://minio:9000")
+                .endpoint("http://minio1:9000")
                 .credentials("minioadmin", "minioadmin")
                 .build();
     }
