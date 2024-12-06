@@ -11,15 +11,23 @@ services:
     networks:
       - app-network
 
+  user-handler:
+    build:
+      context: ./Backend/User-Handler
+    deploy:
+      replicas: 3  # Skaliere den User-Handler auf 3 Instanzen
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app-network
+
   database:
     container_name: MariaDB
     build:
       context: ./Database
     environment:
       - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
-      - MYSQL_DATABASE=
-    volumes:
-      - ./Database/data:/var/lib/mysql
+      - MYSQL_DATABASE=vs_filesharing
     ports:
       - "3306:3306"
     networks:

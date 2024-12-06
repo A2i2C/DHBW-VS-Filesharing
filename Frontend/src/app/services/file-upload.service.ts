@@ -6,7 +6,7 @@ import { Observable, throwError, catchError } from 'rxjs';
   providedIn: 'root'
 })
 export class FileUploadService {
-  private apiUrl = 'http://file-handler:8080/api/filehandler/upload'; // API-URL des Spring Boot-Backends
+  private apiUrl = 'http://localhost/api/file/upload'; // API-URL des Spring Boot-Backends
 
   constructor(private http: HttpClient) {}
 
