@@ -8,6 +8,33 @@ CREATE TABLE USER (
     password INT NOT NULL
 );
 
+CREATE TABLE UserCommunication (
+    communication_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    user_id2 INT,
+    CONSTRAINT fk_user
+        FOREIGN KEY (user_id)
+            REFERENCES USER(user_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    CONSTRAINT fk_user2
+        FOREIGN KEY (user_id2)
+            REFERENCES USER(user_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+);
+
+CREATE TABLE UserCommunicationMessages (
+    message_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    communication_id INT,
+    message VARCHAR(255),
+    CONSTRAINT fk_user
+        FOREIGN KEY (communication_id)
+            REFERENCES UserCommunication(communication_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+);
+
 CREATE TABLE FileDetails (
     filename VARCHAR(255) PRIMARY KEY,
     minioeins boolean,
