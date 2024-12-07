@@ -13,8 +13,11 @@ import java.security.NoSuchAlgorithmException;
 @Service
 @RequiredArgsConstructor
 public class FileHandlerService {
+    private final MinioClientFactory minioClientFactory;
+
     public void fileUpload(FileHandlerFileRequest uploadFileRequest) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
-        MinioClient minioClient = connectMinioClient();
+        MinioClient minioClient = minioClientFactory.createMinioClient();
+
 
         String bucketName = "baumbucket";
         String objectName = uploadFileRequest.file().getOriginalFilename();
@@ -46,10 +49,4 @@ public class FileHandlerService {
         }
     }
 
-    private MinioClient connectMinioClient() {
-        return MinioClient.builder()
-                .endpoint("http://minio1:9000")
-                .credentials("minioadmin", "minioadmin")
-                .build();
-    }
 }
