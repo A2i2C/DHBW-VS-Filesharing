@@ -6,7 +6,6 @@ import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
-import {NavbarComponent} from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-signup',
@@ -20,13 +19,14 @@ import {NavbarComponent} from '../navbar/navbar.component';
     MatFormField,
     MatInput,
     ReactiveFormsModule,
-    NavbarComponent
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
 })
 export class SignupComponent {
-  user: FormGroup = new FormGroup({
+  protected errorMessage: string = '';
+
+  protected user: FormGroup = new FormGroup({
     username: new FormControl(''),
     password: new FormControl('')
   });
@@ -41,6 +41,7 @@ export class SignupComponent {
       },
       error: (err) => {
         console.error('Error during signup:', err);
+        this.errorMessage = 'Signup failed. Please try again.';
       }
     });
   }
