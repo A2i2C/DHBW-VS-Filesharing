@@ -1,0 +1,20 @@
+<nav class="navbar">
+  <ul class="nav-list">
+    @if(!isAuthenticated()) {
+      <li class="nav-item">
+        <a routerLink="/login" routerLinkActive="active" class="nav-link">Login</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/signup" routerLinkActive="active" class="nav-link">Signup</a>
+      </li>
+    }
+    @if(isAuthenticated()) {
+      <li class="nav-item">
+        <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/login" class="nav-link" (click)="logout()">Logout</a>
+      </li>
+    }
+  </ul>
+</nav>
