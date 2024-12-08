@@ -21,7 +21,12 @@ public class FileHandlerController {
     public void uploadFile(@RequestPart("file") MultipartFile file, @RequestParam String bucketName) throws Exception {
         FileHandlerFileRequest uploadFileRequest = new FileHandlerFileRequest(file);
         fileHandlerService.uploadFile(bucketName, uploadFileRequest);
+    }
 
+    @PostMapping("/createBucket")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void createBucket(@RequestParam String bucketName) throws Exception {
+        fileHandlerService.createBuckets(bucketName);
     }
 
 }
