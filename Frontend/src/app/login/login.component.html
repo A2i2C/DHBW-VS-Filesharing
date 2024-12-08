@@ -1,24 +1,28 @@
-<app-navbar></app-navbar>
+<div class="loginAndError">
+  <mat-card>
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="user" (ngSubmit)="login()">
+        <p>
+          <mat-form-field>
+            <input type="text" matInput placeholder="Username" formControlName="username">
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field>
+            <input type="password" matInput placeholder="Password" formControlName="password">
+          </mat-form-field>
+        </p>
+        <div class="button">
+          <button type="submit" mat-button>Login</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 
-<mat-card>
-  <mat-card-title>Login</mat-card-title>
-  <mat-card-content>
-    <form [formGroup]="user" (ngSubmit)="login()">
-      <p>
-        <mat-form-field>
-          <input type="text" matInput placeholder="Username" formControlName="username">
-        </mat-form-field>
-      </p>
-
-      <p>
-        <mat-form-field>
-          <input type="password" matInput placeholder="Password" formControlName="password">
-        </mat-form-field>
-      </p>
-
-      <div class="button">
-        <button type="submit" mat-button>Login</button>
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card>
+  @if(errorMessage != '') {
+    <div class="errorBox">
+      {{errorMessage}}
+    </div>
+  }
+</div>

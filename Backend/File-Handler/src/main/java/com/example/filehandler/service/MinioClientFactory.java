@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MinioClientFactory {
-
     public MinioClient createMinioClient() {
         return MinioClient.builder()
                 .endpoint("http://minio1:9000")
