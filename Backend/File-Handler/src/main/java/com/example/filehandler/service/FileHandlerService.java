@@ -61,5 +61,15 @@ public class FileHandlerService {
         }
     }
 
+    public void downloadFile(String bucketName, String objectName) {
+        try {
+            MinioClient minioClient = minioClientFactory.createMinioClient();
+            minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            log.info("File '{}' downloaded successfully from bucket '{}'", objectName, bucketName);
+        } catch (Exception e) {
+            log.error("Error occurred while downloading file '{}'", objectName, e);
+        }
+    }
+
 
 }
