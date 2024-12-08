@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import {jwtDecode} from 'jwt-decode';
 export class AuthService {
   private apiUrl = 'http://localhost/api/user';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   signup(user: any): Observable<any> {
     return this.http.post(this.apiUrl + "/signup", user);
@@ -17,6 +18,12 @@ export class AuthService {
 
   login(user: any): Observable<any> {
     return this.http.post(this.apiUrl + "/login", user, { observe: 'response' })
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    this.router.navigate(['/login']);
   }
 
   getAuthHeaders() {
