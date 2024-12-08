@@ -51,5 +51,15 @@ public class FileHandlerService {
         }
     }
 
+    public void deleteFile(String bucketName, String objectName) {
+        try {
+            MinioClient minioClient = minioClientFactory.createMinioClient();
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            log.info("File '{}' deleted successfully from bucket '{}'", objectName, bucketName);
+        } catch (Exception e) {
+            log.error("Error occurred while deleting file '{}'", objectName, e);
+        }
+    }
+
 
 }

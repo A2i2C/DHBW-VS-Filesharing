@@ -29,4 +29,10 @@ public class FileHandlerController {
         fileHandlerService.createBuckets(bucketName);
     }
 
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
+        fileHandlerService.deleteFile(bucketName, objectName);
+    }
+
 }
