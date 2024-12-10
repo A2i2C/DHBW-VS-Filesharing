@@ -21,7 +21,7 @@ import {UserService} from '../services/user.service';
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent implements OnInit{
-  users = ['User1', 'User2', 'User3'];
+  users: String[] = [];
 
   protected searched_user: FormGroup = new FormGroup({
     username: new FormControl(''),
@@ -33,7 +33,7 @@ export class UserPanelComponent implements OnInit{
     this.userService.getUserPartner(localStorage.getItem('username')!).subscribe({
       next: (response) => {
         for(const user of response) {
-          this.users.push(user);
+          this.users.push(user.username);
         }
       },
       error: (err) => {
@@ -45,8 +45,16 @@ export class UserPanelComponent implements OnInit{
   addUser() {
     const username = this.searched_user.value.username;
     if (username) {
-      this.users.push(username);
-      this.searched_user.reset();
+      this.userService.addPartner(username).subscribe({
+        next: (res) => {
+          if (res.status === 200) {
+            this.users.push(username);
+          }
+        },
+        error: (err) => {
+          console.error('Fehler beim hinzufügen des Partners', err);
+      }
+    });
     }
   }
 }

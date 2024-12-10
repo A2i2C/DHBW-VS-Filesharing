@@ -1,19 +1,22 @@
 package filesharing.userhandler.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long user_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
+
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
     private String password;
 }

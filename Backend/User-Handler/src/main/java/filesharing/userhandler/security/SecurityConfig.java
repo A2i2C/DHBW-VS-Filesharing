@@ -99,9 +99,12 @@ class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
                 String username = jwtUtil.extractUsername(token);
+                System.out.println("Validated token for user: " + username);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, null);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                System.out.println("Invalid token");
             }
         }
         filterChain.doFilter(request, response);

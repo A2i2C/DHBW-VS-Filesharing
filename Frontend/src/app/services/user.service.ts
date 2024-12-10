@@ -11,8 +11,15 @@ export class UserService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getUserPartner(userName: String): Observable<any> {
-    const payload = { username: userName };
+  getUserPartner(username: String): Observable<any> {
+    const payload = { username: username };
     return this.http.post(this.apiUrl + "/partner", payload, this.authService.getAuthHeaders() )
+  }
+
+  addPartner(username_2: String): Observable<any> {
+    const username_1 = localStorage.getItem('username');
+    const payload = { username_1: username_1,  username_2: username_2 };
+    const headers = this.authService.getAuthHeaders().headers;
+    return this.http.post(this.apiUrl + "/partner/add", payload, { headers, observe: 'response' } )
   }
 }
