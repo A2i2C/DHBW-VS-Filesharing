@@ -54,45 +54,41 @@ services:
     networks:
       - app-network
 
-  minio1:
+  # Shard 1 - Repliziert auf 3 Instanzen
+  shard1-minio:
     image: minio/minio
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
-      - ./minio/data1:/data
-    command: server http://minio1/data http://minio2/data http://minio3/data
+      - ./minio/shard1/data1:/data1
+      - ./minio/shard1/data2:/data2
+      - ./minio/shard1/data3:/data3
+    command: server http://shard1-minio/data{1...3}
     networks:
-      app-network:
-        aliases:
-          - minio1
+      - app-network
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
 
-  minio2:
+  # Shard 2 - Repliziert auf 3 Instanzen
+  shard2-minio:
     image: minio/minio
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
-      - ./minio/data2:/data
-    command: server http://minio1/data http://minio2/data http://minio3/data
+      - ./minio/shard2/data1:/data1
+      - ./minio/shard2/data2:/data2
+      - ./minio/shard2/data3:/data3
+    command: server http://shard2-minio/data{1...3}
     networks:
-      app-network:
-        aliases:
-          - minio2
-
-  minio3:
-    image: minio/minio
-    environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
-    volumes:
-      - ./minio/data3:/data
-    command: server http://minio1/data http://minio2/data http://minio3/data
-    networks:
-      app-network:
-        aliases:
-          - minio3
-
+      - app-network
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
 
 networks:
   app-network:

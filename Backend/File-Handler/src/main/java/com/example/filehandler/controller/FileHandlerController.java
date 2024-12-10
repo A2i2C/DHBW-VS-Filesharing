@@ -28,19 +28,19 @@ public class FileHandlerController {
     @PostMapping("/createBucket")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void createBucket(@RequestParam String bucketName) throws Exception {
-        fileHandlerService.createBuckets(bucketName);
+        fileHandlerService.createBucket(bucketName);
     }
 
-    @DeleteMapping("/delete")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deleteFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
-        fileHandlerService.deleteFile(bucketName, objectName);
-    }
+//    @DeleteMapping("/delete")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public void deleteFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
+//        fileHandlerService.deleteFile(bucketName, objectName);
+//    }
 
-    @PostMapping("/download")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void downloadFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
-        fileHandlerService.downloadFile(bucketName, objectName);
-    }
+//    @PostMapping("/download")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public void downloadFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
+//        fileHandlerService.downloadFile(bucketName, objectName);
+//    }
 
 }
