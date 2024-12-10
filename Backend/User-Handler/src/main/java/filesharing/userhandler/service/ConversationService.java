@@ -2,8 +2,8 @@ package filesharing.userhandler.service;
 
 import filesharing.userhandler.dto.UserDto;
 import filesharing.userhandler.model.MyUser;
-import filesharing.userhandler.model.MyUserRepository;
-import filesharing.userhandler.model.UserCommunicationRepository;
+import filesharing.userhandler.repository.MyUserRepository;
+import filesharing.userhandler.repository.UserCommunicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,6 @@ public class ConversationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Fetch related persons by user ID
-        return conversationRepository.findPersonsByUserId(myUser.getUserId())
-                .stream()
-                .map(user -> new UserDto(user.userId(), user.username(), user.password()))
-                .toList();
+        return conversationRepository.findPersonsByUserId(myUser.getUserId());
     }
 }

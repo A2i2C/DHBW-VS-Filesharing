@@ -4,9 +4,9 @@ import filesharing.userhandler.dto.TwoUserDto;
 import filesharing.userhandler.dto.UserDto;
 import filesharing.userhandler.dto.UsernameDto;
 import filesharing.userhandler.model.MyUser;
-import filesharing.userhandler.model.MyUserRepository;
+import filesharing.userhandler.repository.MyUserRepository;
 import filesharing.userhandler.model.UserCommunication;
-import filesharing.userhandler.model.UserCommunicationRepository;
+import filesharing.userhandler.repository.UserCommunicationRepository;
 import filesharing.userhandler.service.ConversationService;
 import filesharing.userhandler.service.FileHandlerService;
 import lombok.RequiredArgsConstructor;
@@ -88,7 +88,7 @@ public class UserController {
 
     // Helper method to generate a consistent bucket name
     private String createConsistentBucketName(String user1, String user2) {
-        return (user1.compareTo(user2) < 0 ? user1 + "+" + user2 : user2 + "+" + user1);
+        return (user1.compareTo(user2) < 0 ? user1 + "-" + user2 + "-bucket" : user2 + "-" + user1 + "-bucket");
     }
 
 }
