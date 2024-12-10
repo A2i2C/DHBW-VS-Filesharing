@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../services/auth.service';
 import { Router } from '@angular/router';
 import {MatButton} from '@angular/material/button';
@@ -27,13 +27,27 @@ export class SignupComponent {
   protected errorMessage: string = '';
 
   protected user: FormGroup = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl('')
+    username: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(8),
+      Validators.pattern('^[A-Za-z][A-Za-z0-9]*$') // Needs to begin with a letter
+    ]),
+    password: new FormControl('',
+      [
+        Validators.required,
+        Validators.minLength(3)
+      ])
   });
 
   constructor(private authService: AuthService, private router: Router) { }
 
   signup() {
+    if (this.user.invalid) {
+      console.error('Form is invalid');
+      return;
+    }
+
     this.authService.signup(this.user.value).subscribe({
       next: () => {
         // Redirect to login after successful signup

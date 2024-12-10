@@ -5,12 +5,12 @@
       <form [formGroup]="user" (ngSubmit)="signup()">
         <p>
           <mat-form-field>
-            <input type="text" matInput placeholder="Username" formControlName="username">
+            <input type="text" id="username" minlength="3" maxlength="8" pattern="[A-Za-z][A-Za-z0-9]*" required matInput placeholder="Username" formControlName="username">
           </mat-form-field>
         </p>
         <p>
           <mat-form-field>
-            <input type="password" matInput placeholder="Password" formControlName="password">
+            <input type="password" id="password" minlength="3" required matInput placeholder="Password" formControlName="password">
           </mat-form-field>
         </p>
         <div class="button">
@@ -23,6 +23,42 @@
   @if(errorMessage != '') {
     <div class="errorBox">
       {{errorMessage}}
+    </div>
+  }
+
+  @if(user.get('username')?.hasError('required') && user.get('username')?.touched) {
+    <div class="errorBox">
+      Username is required.
+    </div>
+  }
+
+  @if(user.get('username')?.hasError('minlength') && user.get('username')?.touched) {
+    <div class="errorBox">
+      Username must be at least 3 characters long.
+    </div>
+  }
+
+  @if(user.get('username')?.hasError('maxlength') && user.get('username')?.touched) {
+    <div class="errorBox">
+      Username cannot exceed 8 characters.
+    </div>
+  }
+
+  @if(user.get('username')?.hasError('pattern') && user.get('username')?.touched) {
+    <div class="errorBox">
+      Username must start with a letter and can only contain letters and numbers.
+    </div>
+  }
+
+  @if(user.get('password')?.hasError('required') && user.get('password')?.touched) {
+    <div class="errorBox">
+      Password is required.
+    </div>
+  }
+
+  @if(user.get('password')?.hasError('minlength') && user.get('password')?.touched) {
+    <div class="errorBox">
+      Password must be at least 3 characters long.
     </div>
   }
 </div>
