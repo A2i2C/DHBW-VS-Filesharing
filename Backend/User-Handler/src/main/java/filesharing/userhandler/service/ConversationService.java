@@ -24,9 +24,6 @@ public class ConversationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Fetch related persons by user ID
-        return conversationRepository.findPersonsByUserId(myUser.getUserId())
-                .stream()
-                .map(user -> new UserDto(user.userId(), user.username(), user.password()))
-                .toList();
+        return conversationRepository.findPersonsByUserId(myUser.getUserId());
     }
 }

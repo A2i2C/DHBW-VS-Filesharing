@@ -88,7 +88,7 @@ public class UserController {
 
     // Helper method to generate a consistent bucket name
     private String createConsistentBucketName(String user1, String user2) {
-        return (user1.compareTo(user2) < 0 ? user1 + "+" + user2 : user2 + "+" + user1);
+        return (user1.compareTo(user2) < 0 ? user1 + "-" + user2 + "-bucket" : user2 + "-" + user1 + "-bucket");
     }
 
 }
