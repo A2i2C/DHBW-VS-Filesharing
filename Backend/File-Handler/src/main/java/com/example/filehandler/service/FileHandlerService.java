@@ -38,15 +38,15 @@ public class FileHandlerService {
     }
 
     public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest) {
-      //  List<String> targetServers = fileDistributionService.getMinioServers();
-     //   minioClientFactory.initializeMinioClients(targetServers);
+        List<String> targetServers = fileDistributionService.getMinioServer();
+        List<String> initializedServer = minioClientFactory.initializeMinioClients(targetServers);
 
         //Get MetaData from File
         String objectName = fileHandlerFileRequest.file().getOriginalFilename();
         String contentType = fileHandlerFileRequest.file().getContentType();
         try {
-           // for (String server : targetServers) {
-                MinioClient minioClient = minioClientFactory.createMinioClient();
+            for (String server : initializedServer) {
+                MinioClient minioClient = minioClientFactory.getMinioClient(server);
 
                 //Upload File
                 try (InputStream inputStream = fileHandlerFileRequest.file().getInputStream()) {
@@ -57,9 +57,8 @@ public class FileHandlerService {
                             .contentType(contentType)
                             .build());
                 }
-                //log.info("File '{}' uploaded successfully to bucket '{}' on server '{}'", objectName, bucketName, server);
-                log.info("File '{}' uploaded successfully to bucket '{}'", objectName, bucketName);
-           // }
+                log.info("File '{}' uploaded successfully to bucket '{}' on server '{}'", objectName, bucketName, server);
+            }
       //      saveFileDetails(objectName, targetServers);
         }
         catch (Exception e) {

@@ -12,12 +12,13 @@ public class MinioClientFactory {
     private final Map<String, MinioClient> minioClientMap = new HashMap<>();
 
 
-    public void initializeMinioClients(List<String> targetServers) {
+    public List<String> initializeMinioClients(List<String> targetServers) {
         targetServers.forEach(server -> {
             if (!minioClientMap.containsKey(server)) {
                 minioClientMap.put(server, createDistributedMinioClient("http://" + server + ":9000"));
             }
         });
+        return targetServers;
     }
 
     private MinioClient createDistributedMinioClient(String endpoint) {
@@ -29,13 +30,6 @@ public class MinioClientFactory {
 
     public MinioClient getMinioClient(String server) {
         return minioClientMap.get(server);
-    }
-
-    public MinioClient createMinioClient() {
-        return MinioClient.builder()
-                .endpoint("http://shard1-minio:9000")
-                .credentials("minioadmin", "minioadmin")
-                .build();
     }
 
 }

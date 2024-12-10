@@ -1,29 +1,40 @@
 package com.example.filehandler.service;
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
 public class FileDistributionService {
 
     private final List<String> minioServers;
-    private final AtomicInteger counter = new AtomicInteger(0); // Atomic Integer was used to increment the counter in a thread-safe manner
+    private final ValueOperations<String, String> valueOperations;
 
-    public FileDistributionService() {
-        this.minioServers = List.of("shard1-minio", "shard2-minio"); // List of Minio Servers, can be extended to any number of servers
+    // Redis key for the counter
+    private static final String COUNTER_KEY = "file_distribution_counter";
+
+    @Autowired
+    public FileDistributionService(ValueOperations<String, String> valueOperations) {
+        this.minioServers = List.of("shard1-minio", "shard2-minio");
+        this.valueOperations = valueOperations;
     }
 
     public List<String> getMinioServer() {
-        int serverCount = minioServers.size();
+        // Increment the counter in Redis (it will be thread-safe)
+        String currentCounter = valueOperations.get(COUNTER_KEY);
+        int counterValue = currentCounter != null ? Integer.parseInt(currentCounter) : 0;
+        int index = counterValue % minioServers.size();
 
-        //Calculate the two servers to which the file will be distributed
-        int index = counter.getAndIncrement() % serverCount;
+        // Update the Redis counter
+        valueOperations.set(COUNTER_KEY, String.valueOf(counterValue + 1));
+
+        // Log the server to which the file will be distributed
         log.info("File will be distributed to Minio Server: {}", minioServers.get(index));
-
         return List.of(minioServers.get(index));
     }
 
