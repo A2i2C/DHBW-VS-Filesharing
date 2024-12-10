@@ -1,12 +1,12 @@
 import {Component, WritableSignal} from '@angular/core';
-import {FileUploadComponent} from '../file-upload/file-upload.component';
 import {UserStateService} from '../services/user-state.service';
+import {FileCardComponent} from '../file-card/file-card.component';
 
 @Component({
   selector: 'app-file-panel',
   standalone: true,
   imports: [
-    FileUploadComponent
+    FileCardComponent
   ],
   templateUrl: './file-panel.component.html',
   styleUrl: './file-panel.component.scss'

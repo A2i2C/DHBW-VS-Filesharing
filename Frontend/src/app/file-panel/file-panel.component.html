@@ -1,4 +1,4 @@
-@if (getSelectedUser()()?.trim()){
-  File-Sharing mit {{getSelectedUser()()}}
-  <app-file-upload></app-file-upload>
+@if (getSelectedUser()().trim()){
+  <h1 class="title">File-Sharing mit {{getSelectedUser()()}}</h1>
+  <app-file-card></app-file-card>
 }

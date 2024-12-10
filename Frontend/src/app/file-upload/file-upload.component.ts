@@ -1,22 +1,34 @@
-import { Component } from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {FileUploadService} from '../services/file-upload.service';
+import {MatCard} from "@angular/material/card";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [],
+  imports: [
+    MatCard,
+    MatIcon
+  ],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss'
 })
 export class FileUploadComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   selectedFile: File | null = null;
 
   constructor(private fileUploadService: FileUploadService) {}
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+  triggerFileUpload(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      this.selectedFile = target.files[0];
+      console.log('Selected file:', this.selectedFile.name);
     }
   }
 
