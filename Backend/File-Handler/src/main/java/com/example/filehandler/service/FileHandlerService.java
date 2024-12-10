@@ -37,7 +37,7 @@ public class FileHandlerService {
         }
     }
 
-    public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest) {
+    public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest, String userName) {
         List<String> targetServers = fileDistributionService.getMinioServer();
         List<String> initializedServer = minioClientFactory.initializeMinioClients(targetServers);
 

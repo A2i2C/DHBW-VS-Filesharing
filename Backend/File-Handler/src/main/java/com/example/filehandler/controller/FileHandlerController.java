@@ -20,9 +20,9 @@ public class FileHandlerController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void uploadFile(@RequestPart("file") MultipartFile file, @RequestParam String bucketName) throws Exception {
+    public void uploadFile(@RequestParam String bucketName, @RequestPart("file") MultipartFile file, @RequestParam String userName) throws Exception {
         FileHandlerFileRequest uploadFileRequest = new FileHandlerFileRequest(file);
-        fileHandlerService.uploadFile(bucketName, uploadFileRequest);
+        fileHandlerService.uploadFile(bucketName, uploadFileRequest, userName);
     }
 
     @PostMapping("/createBucket")
