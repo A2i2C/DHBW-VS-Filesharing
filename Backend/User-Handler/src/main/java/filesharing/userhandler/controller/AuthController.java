@@ -1,7 +1,7 @@
 package filesharing.userhandler.controller;
 
 import filesharing.userhandler.model.MyUser;
-import filesharing.userhandler.model.MyUserRepository;
+import filesharing.userhandler.repository.MyUserRepository;
 import filesharing.userhandler.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

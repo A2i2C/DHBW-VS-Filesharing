@@ -1,6 +1,6 @@
 package filesharing.userhandler.security;
 
-import filesharing.userhandler.model.MyUserService;
+import filesharing.userhandler.service.MyUserService;
 import filesharing.userhandler.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
