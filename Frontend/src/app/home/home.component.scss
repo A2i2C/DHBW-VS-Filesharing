@@ -1,0 +1,29 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.all-panels {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.user-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin-left: 10px;
+}
+
+.file-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  margin-left: 10px;
+}
+
