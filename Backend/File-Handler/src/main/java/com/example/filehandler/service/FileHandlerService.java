@@ -50,7 +50,6 @@ public class FileHandlerService {
         try {
             for (String server : initializedServer) {
                 MinioClient minioClient = minioClientFactory.getMinioClient(server);
-
                 //Upload File
                 try (InputStream inputStream = fileHandlerFileRequest.file().getInputStream()) {
                     minioClient.putObject(PutObjectArgs.builder()
@@ -74,7 +73,6 @@ public class FileHandlerService {
         boolean shard1 = targetServers.contains("shard1-minio");
         boolean shard2 = targetServers.contains("shard2-minio");
 
-
         FileDetails fileDetails = new FileDetails();
         fileDetails.setFilename(filename);
         fileDetails.setShardeins(shard1);
@@ -85,12 +83,8 @@ public class FileHandlerService {
     }
 
     public void deleteFile(String bucketName, String fileName) {
-            String shard;
-            if (fileDetailsRepository.findShardEinsByFilename(fileName)) {
-                shard = "shard1-minio";
-            } else {
-                shard = "shard2-minio";
-            }
+        String shard;
+        shard = fileDetailsRepository.findShardEinsByFilename(fileName) ? "shard1-minio" : "shard2-minio";
             try {
                 MinioClient minioClient = minioClientFactory.getMinioClient(shard);
                 minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
@@ -104,31 +98,16 @@ public class FileHandlerService {
     }
 
     public byte[] downloadFile(String bucketName, String fileName) throws Exception {
-        String shard = null;
-        int maxRetries = 10;
-        int retryCount = 0;
+        String shard;
+        shard = fileDetailsRepository.findShardEinsByFilename(fileName) ? "shard1-minio" : "shard2-minio";
 
-        while (fileName == null && retryCount < maxRetries) {
-            log.info("File name is null, retrying to download file");
-            Thread.sleep(1000);
-            retryCount++;
-        }
-
-        if (fileDetailsRepository.findShardEinsByFilename(fileName)) {
-            shard = "shard1-minio";
-        } else {
-            shard = "shard2-minio";
-        }
-
-        // Minio Client Setup und Dateiabruf
         MinioClient minioClient = minioClientFactory.getMinioClient(shard);
         InputStream stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
 
-        // Datei in ByteArray umwandeln
         byte[] fileContent = stream.readAllBytes();
         stream.close();
 
-        // Rückgabe des Byte-Arrays und nicht der ResponseEntity
+        log.info("File '{}' downloaded successfully from bucket '{}', in server '{}", fileName, bucketName, shard);
         return fileContent;
     }
 }
