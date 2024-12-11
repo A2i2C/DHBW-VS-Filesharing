@@ -5,7 +5,10 @@ import com.example.filehandler.service.FileHandlerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,8 +47,19 @@ public class FileHandlerController {
 
     @PostMapping("/download")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void downloadFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
-        fileHandlerService.downloadFile(bucketName, filename);
+    public ResponseEntity<ByteArrayResource> downloadFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
+        // Aufruf des Services, der nur die Datei liefert
+        byte[] fileContent = fileHandlerService.downloadFile(bucketName, filename);
+
+        // HTTP-Header setzen
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", filename);
+
+        // Rückgabe der Datei mit HTTP-Headern
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ByteArrayResource(fileContent));
     }
 
 }

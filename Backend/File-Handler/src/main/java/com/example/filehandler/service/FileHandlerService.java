@@ -7,6 +7,7 @@ import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.io.InputStream;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class FileHandlerService {
         //Get MetaData from File
         String objectName = fileHandlerFileRequest.file().getOriginalFilename();
         String contentType = fileHandlerFileRequest.file().getContentType();
+
         try {
             for (String server : initializedServer) {
                 MinioClient minioClient = minioClientFactory.getMinioClient(server);
@@ -101,21 +103,32 @@ public class FileHandlerService {
         fileDetailsRepository.deleteByUserId(userId);
     }
 
-    public void downloadFile(String bucketName, String fileName) {
-        String shard;
+    public byte[] downloadFile(String bucketName, String fileName) throws Exception {
+        String shard = null;
+        int maxRetries = 10;
+        int retryCount = 0;
+
+        while (fileName == null && retryCount < maxRetries) {
+            log.info("File name is null, retrying to download file");
+            Thread.sleep(1000);
+            retryCount++;
+        }
+
         if (fileDetailsRepository.findShardEinsByFilename(fileName)) {
             shard = "shard1-minio";
         } else {
             shard = "shard2-minio";
         }
-        try {
-            MinioClient minioClient = minioClientFactory.getMinioClient(shard);
-            minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-            log.info("File '{}' downloaded successfully from bucket '{}'", fileName, bucketName);
-        } catch (Exception e) {
-            log.error("Error occurred while downloading file '{}'", fileName, e);
-        }
+
+        // Minio Client Setup und Dateiabruf
+        MinioClient minioClient = minioClientFactory.getMinioClient(shard);
+        InputStream stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
+
+        // Datei in ByteArray umwandeln
+        byte[] fileContent = stream.readAllBytes();
+        stream.close();
+
+        // Rückgabe des Byte-Arrays und nicht der ResponseEntity
+        return fileContent;
     }
-
-
 }
