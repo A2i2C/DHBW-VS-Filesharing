@@ -24,9 +24,9 @@ public class FileHandlerController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam String bucketName, @RequestPart("file") MultipartFile file, @RequestParam String userName) throws Exception {
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam String bucketName, @RequestPart("file") MultipartFile file, @RequestParam long userID) throws Exception {
         FileHandlerFileRequest uploadFileRequest = new FileHandlerFileRequest(file);
-        fileHandlerService.uploadFile(bucketName, uploadFileRequest, userName);
+        fileHandlerService.uploadFile(bucketName, uploadFileRequest, userID);
         return ResponseEntity.ok(Map.of("message", "File Uploaded successfully", "fileName", file.getName()));
     }
 
@@ -36,16 +36,16 @@ public class FileHandlerController {
         fileHandlerService.createBucket(bucketName);
     }
 
-//    @DeleteMapping("/delete")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public void deleteFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
-//        fileHandlerService.deleteFile(bucketName, objectName);
-//    }
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
+        fileHandlerService.deleteFile(bucketName, filename);
+    }
 
-//    @PostMapping("/download")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public void downloadFile(@RequestParam String bucketName, @RequestParam String objectName) throws Exception {
-//        fileHandlerService.downloadFile(bucketName, objectName);
-//    }
+    @PostMapping("/download")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void downloadFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
+        fileHandlerService.downloadFile(bucketName, filename);
+    }
 
 }
