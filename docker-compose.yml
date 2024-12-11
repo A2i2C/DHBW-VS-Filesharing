@@ -28,6 +28,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
       - MYSQL_DATABASE=vs_filesharing
+      - MYSQL_USER=vs_filesharing
     ports:
       - "3306:3306"
     networks:

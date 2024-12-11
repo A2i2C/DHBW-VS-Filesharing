@@ -1,7 +1,9 @@
 package com.example.filehandler.service;
 
 import com.example.filehandler.dto.FileHandlerFileRequest;
-import com.example.filehandler.repository.FileDetailsRepository;
+import com.example.filehandler.model.FileDetailsRepository;
+import com.example.filehandler.model.UserRepository;
+import com.example.filehandler.repository.FileDetails;
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ public class FileHandlerService {
     private final FileDistributionService fileDistributionService;
 
     private final FileDetailsRepository fileDetailsRepository;
+    private final UserRepository userRepository;
 
     public void createBucket(String bucketName)
     {
@@ -59,24 +62,28 @@ public class FileHandlerService {
                 }
                 log.info("File '{}' uploaded successfully to bucket '{}' on server '{}'", objectName, bucketName, server);
             }
-      //      saveFileDetails(objectName, targetServers);
+            saveFileDetails(objectName, targetServers, userName);
         }
         catch (Exception e) {
             log.error("Error occurred while uploading file '{}'", fileHandlerFileRequest.file().getOriginalFilename(), e);
         }
     }
 
-//    private void saveFileDetails(String filename, List<String> targetServers) {
-//        //Save File Details to Database
-//        boolean minio1 = targetServers.contains("minio1");
-//        boolean minio2 = targetServers.contains("minio2");
-//        boolean minio3 = targetServers.contains("minio3");
-//        log.debug("Saving file details: filename={}, minio1={}, minio2={}, minio3={}, userId={}",
-//                filename, minio1, minio2, minio3, "user1");
-//
-//        fileDetailsRepository.saveFileDetails(filename, minio1, minio2, minio3, 1);
-//        log.info("File '{}' details saved successfully to Database", filename);
-//    }
+    private void saveFileDetails(String filename, List<String> targetServers, String userName) {
+        //Save File Details to Database
+
+        boolean shard1 = targetServers.contains("shard1-minio");
+        boolean shard2 = targetServers.contains("shard2-minio");
+
+        FileDetails fileDetails = new FileDetails();
+
+        fileDetails.setFilename(filename);
+        fileDetails.setShardeins(shard1);
+        fileDetails.setShardzwei(shard2);
+        fileDetails.setUser_id(userRepository.findUserIdByUsername(userName));
+
+        fileDetailsRepository.save(fileDetails);
+    }
 
 //    public void deleteFile(String bucketName, String objectName) {
 //        try {
