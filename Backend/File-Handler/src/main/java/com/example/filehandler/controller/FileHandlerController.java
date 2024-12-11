@@ -4,9 +4,13 @@ import com.example.filehandler.dto.FileHandlerFileRequest;
 import com.example.filehandler.service.FileHandlerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 
 @Slf4j
@@ -20,9 +24,10 @@ public class FileHandlerController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void uploadFile(@RequestParam String bucketName, @RequestPart("file") MultipartFile file, @RequestParam String userName) throws Exception {
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam String bucketName, @RequestPart("file") MultipartFile file, @RequestParam String userName) throws Exception {
         FileHandlerFileRequest uploadFileRequest = new FileHandlerFileRequest(file);
         fileHandlerService.uploadFile(bucketName, uploadFileRequest, userName);
+        return ResponseEntity.ok(Map.of("message", "File Uploaded successfully", "fileName", file.getName()));
     }
 
     @PostMapping("/createBucket")
