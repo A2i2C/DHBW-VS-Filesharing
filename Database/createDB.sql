@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS vs_filesharing;
 
 USE vs_filesharing;
 
-CREATE TABLE USER (
+CREATE TABLE User (
     user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password INT NOT NULL
@@ -36,10 +36,10 @@ CREATE TABLE UserCommunicationMessages (
 );
 
 CREATE TABLE FileDetails (
-    filename VARCHAR(255) PRIMARY KEY,
-    minioeins boolean,
-    miniozwei boolean,
-    miniodrei boolean,
+    file_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    shardeins boolean,
+    shardzwei boolean,
     user_id INT,
     CONSTRAINT fk_user_file_details
         FOREIGN KEY (user_id)
