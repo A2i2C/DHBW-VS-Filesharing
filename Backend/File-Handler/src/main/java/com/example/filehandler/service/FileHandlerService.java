@@ -1,10 +1,10 @@
 package com.example.filehandler.service;
 
 import com.example.filehandler.dto.FileHandlerFileRequest;
-import com.example.filehandler.model.FileDetailsRepository;
-import com.example.filehandler.model.UserRepository;
-import com.example.filehandler.repository.FileDetails;
+import com.example.filehandler.model.FileDetails;
+import com.example.filehandler.repository.FileDetailsRepository;
 import io.minio.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,6 @@ public class FileHandlerService {
     private final FileDistributionService fileDistributionService;
 
     private final FileDetailsRepository fileDetailsRepository;
-    private final UserRepository userRepository;
 
     public void createBucket(String bucketName)
     {
@@ -40,7 +39,7 @@ public class FileHandlerService {
         }
     }
 
-    public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest, String userName) {
+    public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest, Long userId) {
         List<String> targetServers = fileDistributionService.getMinioServer();
         List<String> initializedServer = minioClientFactory.initializeMinioClients(targetServers);
 
@@ -62,38 +61,46 @@ public class FileHandlerService {
                 }
                 log.info("File '{}' uploaded successfully to bucket '{}' on server '{}'", objectName, bucketName, server);
             }
-            saveFileDetails(objectName, targetServers, userName);
         }
         catch (Exception e) {
             log.error("Error occurred while uploading file '{}'", fileHandlerFileRequest.file().getOriginalFilename(), e);
         }
+        saveFileDetails(objectName, targetServers, userId);
+        log.info("File Details saved successfully to database");
     }
 
-    private void saveFileDetails(String filename, List<String> targetServers, String userName) {
-        //Save File Details to Database
-
+    private void saveFileDetails(String filename, List<String> targetServers, Long userID) {
         boolean shard1 = targetServers.contains("shard1-minio");
         boolean shard2 = targetServers.contains("shard2-minio");
 
-        FileDetails fileDetails = new FileDetails();
 
+        FileDetails fileDetails = new FileDetails();
         fileDetails.setFilename(filename);
         fileDetails.setShardeins(shard1);
         fileDetails.setShardzwei(shard2);
-        fileDetails.setUser_id(userRepository.findUserIdByUsername(userName));
+        fileDetails.setUserId(userID);
 
         fileDetailsRepository.save(fileDetails);
     }
 
-//    public void deleteFile(String bucketName, String objectName) {
-//        try {
-//            MinioClient minioClient = minioClientFactory.createMinioClient();
-//            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
-//            log.info("File '{}' deleted successfully from bucket '{}'", objectName, bucketName);
-//        } catch (Exception e) {
-//            log.error("Error occurred while deleting file '{}'", objectName, e);
-//        }
-//    }
+    public void deleteFile(String bucketName, String fileName) {
+            String shard;
+            if (fileDetailsRepository.findShardEinsByFilename(fileName)) {
+                shard = "shard1-minio";
+            } else {
+                shard = "shard2-minio";
+            }
+            try {
+                MinioClient minioClient = minioClientFactory.getMinioClient(shard);
+                minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
+                log.info("File '{}' deleted successfully from bucket '{}', in server '{}", fileName, bucketName, shard);
+            } catch (Exception e) {
+                log.error("Error occurred while deleting file '{}'", fileName, e);
+            }
+        log.info("Deleting file details from database");
+        long userId = fileDetailsRepository.findUserIdByFilename(fileName);
+        fileDetailsRepository.deleteByUserId(userId);
+    }
 //
 //    public void downloadFile(String bucketName, String objectName) {
 //        try {

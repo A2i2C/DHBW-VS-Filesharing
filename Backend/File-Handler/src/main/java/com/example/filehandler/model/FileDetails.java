@@ -1,4 +1,4 @@
-package com.example.filehandler.repository;
+package com.example.filehandler.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,10 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-
-public class User {
+public class FileDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String username;
-    private String password;
+    private Long fileId;
+    private String filename;
+    private boolean shardeins;
+    private boolean shardzwei;
+    private Long userId;
 }
