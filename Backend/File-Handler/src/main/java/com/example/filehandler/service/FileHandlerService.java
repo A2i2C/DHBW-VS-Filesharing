@@ -4,7 +4,6 @@ import com.example.filehandler.dto.FileHandlerFileRequest;
 import com.example.filehandler.model.FileDetails;
 import com.example.filehandler.repository.FileDetailsRepository;
 import io.minio.*;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -101,16 +100,22 @@ public class FileHandlerService {
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
         fileDetailsRepository.deleteByUserId(userId);
     }
-//
-//    public void downloadFile(String bucketName, String objectName) {
-//        try {
-//            MinioClient minioClient = minioClientFactory.createMinioClient();
-//            minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectName).build());
-//            log.info("File '{}' downloaded successfully from bucket '{}'", objectName, bucketName);
-//        } catch (Exception e) {
-//            log.error("Error occurred while downloading file '{}'", objectName, e);
-//        }
-//    }
+
+    public void downloadFile(String bucketName, String fileName) {
+        String shard;
+        if (fileDetailsRepository.findShardEinsByFilename(fileName)) {
+            shard = "shard1-minio";
+        } else {
+            shard = "shard2-minio";
+        }
+        try {
+            MinioClient minioClient = minioClientFactory.getMinioClient(shard);
+            minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
+            log.info("File '{}' downloaded successfully from bucket '{}'", fileName, bucketName);
+        } catch (Exception e) {
+            log.error("Error occurred while downloading file '{}'", fileName, e);
+        }
+    }
 
 
 }

@@ -42,10 +42,10 @@ public class FileHandlerController {
         fileHandlerService.deleteFile(bucketName, filename);
     }
 
-//    @PostMapping("/download")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public void downloadFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
-//        fileHandlerService.downloadFile(bucketName, filename);
-//    }
+    @PostMapping("/download")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void downloadFile(@RequestParam String bucketName, @RequestParam String filename) throws Exception {
+        fileHandlerService.downloadFile(bucketName, filename);
+    }
 
 }
