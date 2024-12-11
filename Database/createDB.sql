@@ -5,7 +5,7 @@ USE vs_filesharing;
 CREATE TABLE User (
     user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    password INT NOT NULL
+    password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE UserCommunication (
@@ -14,12 +14,12 @@ CREATE TABLE UserCommunication (
     user_id2 INT,
     CONSTRAINT fk_user_communication
         FOREIGN KEY (user_id)
-            REFERENCES USER(user_id)
+            REFERENCES User(user_id)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
     CONSTRAINT fk_user2_communication
         FOREIGN KEY (user_id2)
-            REFERENCES USER(user_id)
+            REFERENCES User(user_id)
             ON DELETE CASCADE
             ON UPDATE CASCADE
 );
@@ -43,7 +43,7 @@ CREATE TABLE FileDetails (
     user_id INT,
     CONSTRAINT fk_user_file_details
         FOREIGN KEY (user_id)
-            REFERENCES USER(user_id)
+            REFERENCES User(user_id)
             ON DELETE CASCADE
             ON UPDATE CASCADE
 );
