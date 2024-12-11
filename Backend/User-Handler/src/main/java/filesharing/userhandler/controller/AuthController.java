@@ -1,8 +1,9 @@
 package filesharing.userhandler.controller;
 
 import filesharing.userhandler.model.MyUser;
-import filesharing.userhandler.model.MyUserRepository;
+import filesharing.userhandler.repository.MyUserRepository;
 import filesharing.userhandler.util.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping(value = "/signup", consumes = "application/json")
-    public ResponseEntity<MyUser>  createUser(@RequestBody MyUser user){
+    public ResponseEntity<MyUser> createUser(@Valid @RequestBody MyUser user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         MyUser savedUser = myUserRepository.save(user);
         return ResponseEntity.ok(savedUser);

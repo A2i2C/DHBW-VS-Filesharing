@@ -1,5 +1,7 @@
-package filesharing.userhandler.model;
+package filesharing.userhandler.service;
 
+import filesharing.userhandler.model.MyUser;
+import filesharing.userhandler.repository.MyUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

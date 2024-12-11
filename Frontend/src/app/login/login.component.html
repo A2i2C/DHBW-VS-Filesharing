@@ -20,6 +20,12 @@
     </mat-card-content>
   </mat-card>
 
+  @if(successMessage != '') {
+    <div class="successBox">
+      {{successMessage}}
+    </div>
+  }
+
   @if(errorMessage != '') {
     <div class="errorBox">
       {{errorMessage}}

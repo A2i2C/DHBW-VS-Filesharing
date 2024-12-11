@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from '../services/auth.service';
 import {Router} from '@angular/router';
@@ -23,7 +23,8 @@ import {MatInput} from '@angular/material/input';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  protected successMessage: string | null = null;
   protected errorMessage = '';
 
   protected user: FormGroup = new FormGroup({
@@ -32,6 +33,12 @@ export class LoginComponent {
   });
 
   constructor(private authService: AuthService, private router: Router) { }
+
+  ngOnInit() {
+    // Use window.history.state to reliably fetch navigation extras to get success message
+    const state = window.history.state as { message?: string };
+    this.successMessage = state?.message || null;
+  }
 
   login() {
     this.authService.login(this.user.value).subscribe({
