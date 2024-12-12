@@ -16,6 +16,14 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails, Intege
     @Query("SELECT shardeins FROM FileDetails WHERE filename = ?1")
     boolean findShardEinsByFilename(String filename);
 
+    //Check if file is already in Bucket and from same User
+    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND bucketname = ?2 AND userId = ?3")
+    String findFilenameByFilenameAndBucketname(String filename, String bucketname, Long userId);
+
+    //If file is arleady in Bucket, update the file to new File from fileID
+    @Transactional
+    void UpdateFileDetailsFromFileId(Long fileId);
+
     @Transactional
     void deleteByUserId(Long userId);
 }

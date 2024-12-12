@@ -4,11 +4,13 @@ import com.example.filehandler.dto.FileHandlerFileRequest;
 import com.example.filehandler.model.FileDetails;
 import com.example.filehandler.repository.FileDetailsRepository;
 import io.minio.*;
+import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -17,7 +19,6 @@ import java.util.List;
 public class FileHandlerService {
     private final MinioClientFactory minioClientFactory;
     private final FileDistributionService fileDistributionService;
-
     private final FileDetailsRepository fileDetailsRepository;
 
     public void createBucket(String bucketName)
@@ -65,15 +66,16 @@ public class FileHandlerService {
         catch (Exception e) {
             log.error("Error occurred while uploading file '{}'", fileHandlerFileRequest.file().getOriginalFilename(), e);
         }
-        saveFileDetails(objectName, targetServers, userId);
+        saveFileDetails(objectName, targetServers, userId, bucketName);
         log.info("File Details saved successfully to database");
     }
 
-    private void saveFileDetails(String filename, List<String> targetServers, Long userID) {
+    private void saveFileDetails(String filename, List<String> targetServers, Long userID, String bucketName) {
         boolean shard1 = targetServers.contains("shard1-minio");
         boolean shard2 = targetServers.contains("shard2-minio");
 
         FileDetails fileDetails = new FileDetails();
+        fileDetails.setBucketname(bucketName);
         fileDetails.setFilename(filename);
         fileDetails.setShardeins(shard1);
         fileDetails.setShardzwei(shard2);
@@ -92,9 +94,31 @@ public class FileHandlerService {
             } catch (Exception e) {
                 log.error("Error occurred while deleting file '{}'", fileName, e);
             }
-        log.info("Deleting file details from database");
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
         fileDetailsRepository.deleteByUserId(userId);
+        log.info("File '{}' deleted successfully from database", fileName);
+    }
+
+    public List<String> getAllFilesFromBucket(String bucketName) {
+        List<String> fileNames = new ArrayList<>();
+        List<String> targetServers = fileDistributionService.getAllMinioServers();
+        List<String> initializedServer = minioClientFactory.initializeMinioClients(targetServers);
+
+        for (String server : initializedServer) {
+            try {
+                MinioClient minioClient = minioClientFactory.getMinioClient(server);
+                log.info("Listing files in bucket '{}' on server '{}'", bucketName, server);
+                Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).build());
+                for (Result<Item> result : results) {
+                    Item item = result.get();
+                    log.info("File '{}' found in bucket '{}', in server '{}", item.objectName(), bucketName, server);
+                    fileNames.add(item.objectName());
+                }
+            } catch (Exception e) {
+                log.error("Error occurred while listing files in bucket '{}'", bucketName, e);
+            }
+        }
+        return fileNames;
     }
 
     public byte[] downloadFile(String bucketName, String fileName) throws Exception {

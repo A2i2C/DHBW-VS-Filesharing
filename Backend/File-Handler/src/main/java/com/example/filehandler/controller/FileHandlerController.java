@@ -2,6 +2,7 @@ package com.example.filehandler.controller;
 
 import com.example.filehandler.dto.FileHandlerFileRequest;
 import com.example.filehandler.service.FileHandlerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -62,6 +64,16 @@ public class FileHandlerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Failed to delete file", "error", e.getMessage()));
         }
+    }
+
+    @PostMapping("/getAllFilesFromBucket")
+    public ResponseEntity<String> getAllFilesFromBucket(@RequestParam String bucketName) throws Exception {
+        List<String> fileNames = fileHandlerService.getAllFilesFromBucket(bucketName);
+
+        // Konvertiere die Liste der Dateinamen in ein JSON-Objekt
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(fileNames);
+        return ResponseEntity.ok(json);
     }
 
     @PostMapping("/download")
