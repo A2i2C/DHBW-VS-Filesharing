@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository // This annotation is used to indicate that the class provides the mechanism for storage, retrieval, search, update and delete operation on objects.
+@Repository
 public interface FileDetailsRepository extends JpaRepository<FileDetails, Integer> {
 
     @Query("SELECT userId FROM FileDetails WHERE filename = ?1")
@@ -15,6 +15,14 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails, Intege
     //Find shard in which file is stored
     @Query("SELECT shardeins FROM FileDetails WHERE filename = ?1")
     boolean findShardEinsByFilename(String filename);
+
+    //Check if file is already in Bucket and from same User
+    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND bucketname = ?2 AND userId = ?3")
+    String findFilenameByFilenameAndBucketname(String filename, String bucketname, Long userId);
+
+    //If file is arleady in Bucket, update the file to new File from fileID
+    @Transactional
+    void UpdateFileDetailsFromFileId(Long fileId);
 
     @Transactional
     void deleteByUserId(Long userId);

@@ -11,7 +11,6 @@ import java.util.Map;
 public class MinioClientFactory {
     private final Map<String, MinioClient> minioClientMap = new HashMap<>();
 
-
     public List<String> initializeMinioClients(List<String> targetServers) {
         targetServers.forEach(server -> {
             if (!minioClientMap.containsKey(server)) {

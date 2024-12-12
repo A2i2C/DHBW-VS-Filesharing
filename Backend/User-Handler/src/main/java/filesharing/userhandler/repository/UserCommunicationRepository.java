@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface UserCommunicationRepository extends JpaRepository<UserCommunication, Long> {
+
+    //Query to find all the users that have a filechat with the user with the given userId
     @Query("SELECT new filesharing.userhandler.dto.UserDto(uc.user2.userId, uc.user2.username, uc.user2.password) " +
             "FROM UserCommunication uc WHERE uc.user1.userId = :userId " +
             "UNION " +

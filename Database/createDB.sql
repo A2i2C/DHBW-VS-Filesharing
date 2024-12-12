@@ -37,6 +37,7 @@ CREATE TABLE UserCommunicationMessages (
 
 CREATE TABLE FileDetails (
     file_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    bucketname VARCHAR(255) NOT NULL,
     filename VARCHAR(255) NOT NULL,
     shardeins boolean,
     shardzwei boolean,

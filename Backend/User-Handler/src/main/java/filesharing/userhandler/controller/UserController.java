@@ -56,14 +56,11 @@ public class UserController {
         boolean communicationExists = userCommunicationRepository.existsByUser1UsernameAndUser2UsernameOrUser1UsernameAndUser2Username(
                 currentUser, partnerName, partnerName, currentUser);
 
-        System.out.println(communicationExists);
-
         if (communicationExists) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error", "UserCommunication entry already exists between: " + currentUser + " and " + partnerName));
         }
 
-        // Create the bucket
         try {
             fileHandlerService.createBucket(bucketName);
 
