@@ -97,7 +97,7 @@ public class FileHandlerService {
 
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
         long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId);
-        fileDetailsRepository.deletebyFileId(fileId);
+        fileDetailsRepository.deleteByFileId(fileId);
         log.info("File '{}' deleted successfully from database", fileName);
     }
 

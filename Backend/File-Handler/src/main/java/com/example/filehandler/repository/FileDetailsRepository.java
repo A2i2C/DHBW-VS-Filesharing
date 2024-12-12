@@ -29,5 +29,5 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails, Intege
     Long findFileIdByFilenameAndUserId(String filename, Long userId);
 
     @Transactional
-    void deletebyFileId(Long fileId);
+    void deleteByFileId(Long fileId);
 }
