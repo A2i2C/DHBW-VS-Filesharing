@@ -94,8 +94,10 @@ public class FileHandlerService {
             } catch (Exception e) {
                 log.error("Error occurred while deleting file '{}'", fileName, e);
             }
+
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
-        fileDetailsRepository.deleteByUserId(userId);
+        long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId);
+        fileDetailsRepository.deletebyFileId(fileId);
         log.info("File '{}' deleted successfully from database", fileName);
     }
 
