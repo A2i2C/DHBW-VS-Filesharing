@@ -91,5 +91,4 @@ public class FileHandlerController {
                 .headers(headers)
                 .body(new ByteArrayResource(fileContent));
     }
-
 }

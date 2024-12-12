@@ -62,6 +62,8 @@ public class FileHandlerService {
                 }
                 log.info("File '{}' uploaded successfully to bucket '{}' on server '{}'", objectName, bucketName, server);
             }
+            saveFileDetails(objectName, targetServers, userId, bucketName);
+            log.info("File Details saved successfully to database");
         }
         catch (Exception e) {
             log.error("Error occurred while uploading file '{}'", fileHandlerFileRequest.file().getOriginalFilename(), e);
@@ -96,7 +98,7 @@ public class FileHandlerService {
             }
 
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
-        long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId);
+        long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
         fileDetailsRepository.deleteByFileId(fileId);
         log.info("File '{}' deleted successfully from database", fileName);
     }

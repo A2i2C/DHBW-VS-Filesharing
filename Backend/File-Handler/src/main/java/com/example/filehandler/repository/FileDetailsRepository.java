@@ -25,8 +25,8 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails, Intege
     void UpdateFileDetailsFromFileId(Long fileId);
 
     //Get FileId to be deleted via filename and userId
-    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND userId = ?2")
-    Long findFileIdByFilenameAndUserId(String filename, Long userId);
+    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND userId = ?2 AND bucketname = ?3")
+    Long findFileIdByFilenameAndUserId(String filename, Long userId, String bucketname);
 
     @Transactional
     void deleteByFileId(Long fileId);
