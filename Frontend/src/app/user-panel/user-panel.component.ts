@@ -1,4 +1,4 @@
-import {Component, OnInit, WritableSignal} from '@angular/core';
+import {Component, OnInit, signal, WritableSignal} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatFormField} from '@angular/material/form-field';
@@ -24,7 +24,7 @@ import {FileCardComponent} from '../file-card/file-card.component';
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent implements OnInit{
-  users: { username: string; bucketname: string }[] = [];
+  protected users = signal<{ username: string; bucketname: string }[]>([]);
 
   protected searched_user: FormGroup = new FormGroup({
     username: new FormControl(''),
@@ -36,7 +36,7 @@ export class UserPanelComponent implements OnInit{
     this.userService.getUserPartner(localStorage.getItem('username')!).subscribe({
       next: (response) => {
         for(const user of response.body) {
-          this.users.push({ username: user.username, bucketname: user.bucketname });
+          this.users.update(values => [...values, {  username: user.username, bucketname: user.bucketname }]);
         }
       },
       error: (err) => {
@@ -56,7 +56,7 @@ export class UserPanelComponent implements OnInit{
             this.fileService.createBucket(bucketName).subscribe({
               next: () => {
                 console.log(`Bucket ${bucketName} created successfully.`);
-                this.users.push({ username: username, bucketname: bucketName });
+                this.users.update(values => [...values, { username: username, bucketname: bucketName }]);
               },
               error: (err: any) => {
                 console.error('Error creating bucket:', err);
@@ -70,7 +70,6 @@ export class UserPanelComponent implements OnInit{
       });
     }
   }
-
 
   setSelectedUser(user: string, bucketname: string): void {
     this.userStateService.selectedUser.set(user);
