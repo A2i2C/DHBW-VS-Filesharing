@@ -14,6 +14,7 @@ public class FileDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long fileId;
+    private String bucketname;
     private String filename;
     private boolean shardeins;
     private boolean shardzwei;

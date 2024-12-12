@@ -16,6 +16,7 @@ public class MyUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    //Validation for username and password
     @Size(min = 3, max = 8, message = "Username must be between 3 and 8 characters.")
     @Pattern(regexp = "^[A-Za-z][A-Za-z0-9]*$", message = "Username must start with a letter and can only contain letters and numbers.")
     @Column(nullable = false, unique = true)

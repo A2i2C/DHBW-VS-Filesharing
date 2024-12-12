@@ -33,7 +33,6 @@ public class FileDistributionService {
         // Update the Redis counter
         valueOperations.set(COUNTER_KEY, String.valueOf(counterValue + 1));
 
-        // Log the server to which the file will be distributed
         log.info("File will be distributed to Minio Server: {}", minioServers.get(index));
         return List.of(minioServers.get(index));
     }
