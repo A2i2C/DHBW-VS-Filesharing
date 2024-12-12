@@ -1,4 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Disable scrolling */
+  box-sizing: border-box; /* Include borders and padding in size calculations */
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

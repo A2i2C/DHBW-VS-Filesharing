@@ -1,0 +1,6 @@
+<mat-card class="upload-card" (click)="triggerFileUpload()">
+  <div class="upload-icon">
+    <mat-icon color="primary">add</mat-icon>
+  </div>
+  <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
+</mat-card>

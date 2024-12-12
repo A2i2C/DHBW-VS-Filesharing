@@ -13,7 +13,8 @@ export class UserService {
 
   getUserPartner(username: String): Observable<any> {
     const payload = { username: username };
-    return this.http.post(this.apiUrl + "/partner", payload, this.authService.getAuthHeaders() )
+    const headers = this.authService.getAuthHeaders().headers;
+    return this.http.post(this.apiUrl + "/partner", payload, { headers, observe: 'response' } )
   }
 
   addPartner(username_2: String): Observable<any> {

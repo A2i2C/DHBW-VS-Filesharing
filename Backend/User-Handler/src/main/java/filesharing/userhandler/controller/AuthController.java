@@ -43,7 +43,8 @@ public class AuthController {
             String token = jwtUtil.generateToken(user.getUsername());
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
-            response.put("username", user.getUsername());
+            response.put("username", trueUser.get().getUsername());
+            response.put("userID", trueUser.get().getUserId().toString());
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body(Collections.singletonMap("error", "Invalid credentials"));

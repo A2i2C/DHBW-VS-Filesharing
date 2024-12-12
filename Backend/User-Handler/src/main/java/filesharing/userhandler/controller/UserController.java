@@ -1,13 +1,13 @@
 package filesharing.userhandler.controller;
 
 import filesharing.userhandler.dto.TwoUserDto;
-import filesharing.userhandler.dto.UserDto;
+import filesharing.userhandler.dto.UserCommunicationDto;
 import filesharing.userhandler.dto.UsernameDto;
 import filesharing.userhandler.model.MyUser;
 import filesharing.userhandler.repository.MyUserRepository;
 import filesharing.userhandler.model.UserCommunication;
 import filesharing.userhandler.repository.UserCommunicationRepository;
-import filesharing.userhandler.service.ConversationService;
+import filesharing.userhandler.service.UserCommunicationService;
 import filesharing.userhandler.service.FileHandlerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private ConversationService conversationService;
+    private UserCommunicationService userCommunicationService;
 
     @Autowired
     private FileHandlerService fileHandlerService;
@@ -37,8 +37,8 @@ public class UserController {
 
     @PostMapping("/partner")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<List<UserDto>> getPersons(@RequestBody UsernameDto request) {
-        List<UserDto> persons = conversationService.getPersonsByUsername(request.username());
+    public ResponseEntity<List<UserCommunicationDto>> getPersons(@RequestBody UsernameDto request) {
+        List<UserCommunicationDto> persons = userCommunicationService.getPersonsByUsername(request.username());
         return ResponseEntity.ok(persons);
     }
 
@@ -74,6 +74,7 @@ public class UserController {
             UserCommunication userCommunication = new UserCommunication();
             userCommunication.setUser1(user1);
             userCommunication.setUser2(user2);
+            userCommunication.setBucketname(bucketName);
             userCommunicationRepository.save(userCommunication);
 
             return ResponseEntity.ok(Map.of("message", "Bucket created successfully", "bucketName", bucketName));

@@ -1,0 +1,37 @@
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 90vh;
+  box-sizing: border-box; /* Ensures padding doesn't affect height calculation */
+  }
+
+.file-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  height: 150px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.file-details {
+  margin-bottom: 8px;
+}
+
+.file-name {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.file-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
