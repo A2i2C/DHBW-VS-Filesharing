@@ -6,6 +6,8 @@ import {MatInput} from '@angular/material/input';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {UserService} from '../services/user.service';
 import {UserStateService} from '../services/user-state.service';
+import {FileService} from '../services/file.service';
+import {FileCardComponent} from '../file-card/file-card.component';
 
 @Component({
   selector: 'app-user-panel',
@@ -22,19 +24,19 @@ import {UserStateService} from '../services/user-state.service';
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent implements OnInit{
-  users: String[] = [];
+  users: { username: string; bucketname: string }[] = [];
 
   protected searched_user: FormGroup = new FormGroup({
     username: new FormControl(''),
   });
 
-  constructor(private userService: UserService, private userStateService: UserStateService) {}
+  constructor(private userService: UserService, private userStateService: UserStateService, private fileService: FileService, private fileCardComponent: FileCardComponent) {}
 
   ngOnInit() {
     this.userService.getUserPartner(localStorage.getItem('username')!).subscribe({
       next: (response) => {
-        for(const user of response) {
-          this.users.push(user.username);
+        for(const user of response.body) {
+          this.users.push({ username: user.username, bucketname: user.bucketname });
         }
       },
       error: (err) => {
@@ -49,18 +51,31 @@ export class UserPanelComponent implements OnInit{
       this.userService.addPartner(username).subscribe({
         next: (res) => {
           if (res.status === 200) {
-            this.users.push(username);
+            console.log('Partner added successfully:', res);
+            const bucketName = res.body.bucketName;
+            this.fileService.createBucket(bucketName).subscribe({
+              next: () => {
+                console.log(`Bucket ${bucketName} created successfully.`);
+                this.users.push({ username: username, bucketname: bucketName });
+              },
+              error: (err: any) => {
+                console.error('Error creating bucket:', err);
+              }
+            });
           }
         },
-        error: (err) => {
-          console.error('Fehler beim hinzufügen des Partners', err);
-      }
-    });
+        error: (err: any) => {
+          console.error('Error adding partner:', err);
+        }
+      });
     }
   }
 
-  setSelectedUser(user: string): void {
+
+  setSelectedUser(user: string, bucketname: string): void {
     this.userStateService.selectedUser.set(user);
+    this.fileService.setBucketName(bucketname);
+    this.fileCardComponent.getFiles();
   }
 
   getSelectedUser(): WritableSignal<string> {

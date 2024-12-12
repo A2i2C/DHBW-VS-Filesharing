@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
         const responseBody = response.body;
         if (responseBody && responseBody.token) {
           localStorage.setItem('username', responseBody.username);
+          localStorage.setItem('userID', responseBody.userID);
           localStorage.setItem('token', responseBody.token);
           this.router.navigate(['/home']);
         } else {

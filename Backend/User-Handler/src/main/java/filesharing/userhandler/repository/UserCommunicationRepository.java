@@ -1,6 +1,6 @@
 package filesharing.userhandler.repository;
 
-import filesharing.userhandler.dto.UserDto;
+import filesharing.userhandler.dto.UserCommunicationDto;
 import filesharing.userhandler.model.UserCommunication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +13,12 @@ import java.util.List;
 public interface UserCommunicationRepository extends JpaRepository<UserCommunication, Long> {
 
     //Query to find all the users that have a filechat with the user with the given userId
-    @Query("SELECT new filesharing.userhandler.dto.UserDto(uc.user2.userId, uc.user2.username, uc.user2.password) " +
+    @Query("SELECT new filesharing.userhandler.dto.UserCommunicationDto(uc.user2.userId, uc.user2.username, uc.bucketname) " +
             "FROM UserCommunication uc WHERE uc.user1.userId = :userId " +
             "UNION " +
-            "SELECT new filesharing.userhandler.dto.UserDto(uc.user1.userId, uc.user1.username, uc.user1.password) " +
+            "SELECT new filesharing.userhandler.dto.UserCommunicationDto(uc.user1.userId, uc.user1.username, uc.bucketname) " +
             "FROM UserCommunication uc WHERE uc.user2.userId = :userId")
-    List<UserDto> findPersonsByUserId(@Param("userId") Long userId);
+    List<UserCommunicationDto> findPersonsByUserId(@Param("userId") Long userId);
 
     boolean existsByUser1UsernameAndUser2UsernameOrUser1UsernameAndUser2Username(String user1, String user2, String user2Reversed, String user1Reversed);
 }

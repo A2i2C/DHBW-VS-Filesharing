@@ -14,9 +14,9 @@
 </mat-card>
 <div class="user-list">
   @for(user of users; track user) {
-    <mat-card (click)="setSelectedUser(user.toString())" [class.active]="user === getSelectedUser()()">
+    <mat-card (click)="setSelectedUser(user.username, user.bucketname)" [class.active]="user.username === getSelectedUser()()">
       <mat-card-content>
-        {{ user }}
+        {{ user.username }}
       </mat-card-content>
     </mat-card>
   }

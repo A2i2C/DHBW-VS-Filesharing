@@ -3,7 +3,10 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   padding: 16px;
-}
+  overflow-y: auto;
+  max-height: 90vh;
+  box-sizing: border-box; /* Ensures padding doesn't affect height calculation */
+  }
 
 .file-card {
   display: flex;

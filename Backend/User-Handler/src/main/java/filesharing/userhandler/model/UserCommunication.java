@@ -19,4 +19,7 @@ public class UserCommunication {
 
     @ManyToOne
     private MyUser user2;
+
+    @Column(length = 63, nullable = false)
+    private String bucketname;
 }
