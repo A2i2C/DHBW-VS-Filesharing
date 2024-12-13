@@ -96,7 +96,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
     this.fileService.getFiles().subscribe({
       next: (response) => {
         const body = response.body as string[];
-        console.log('Files loaded successfully' + body);
+        console.log('Files loaded successfully: ' + body);
 
         if (Array.isArray(body)) {
           for (const file of body) {
