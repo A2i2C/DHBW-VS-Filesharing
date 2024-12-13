@@ -10,10 +10,15 @@
         <button type="submit" mat-button>Add User</button>
       </div>
     </form>
+    @if(errorMessage() != '') {
+      <div class="errorBox">
+        {{errorMessage()}}
+      </div>
+    }
   </mat-card-content>
 </mat-card>
 <div class="user-list">
-  @for(user of users(); track user) {
+  @for(user of users; track user) {
     <mat-card (click)="setSelectedUser(user.username, user.bucketname)" [class.active]="user.username === getSelectedUser()()">
       <mat-card-content>
         {{ user.username }}

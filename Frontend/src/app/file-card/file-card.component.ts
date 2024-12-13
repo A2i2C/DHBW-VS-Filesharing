@@ -1,9 +1,11 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {FileUploadCardComponent} from '../file-upload-card/file-upload-card.component';
 import {FileService} from '../services/file.service';
+import {AllFilesService} from '../services/all-files.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-file-card',
@@ -18,22 +20,32 @@ import {FileService} from '../services/file.service';
   templateUrl: './file-card.component.html',
   styleUrl: './file-card.component.scss'
 })
-export class FileCardComponent implements OnInit {
-  protected files = signal<{id: number, name: string}[]>([]);
-  private filesId = signal<number>(0);
+export class FileCardComponent implements OnInit, OnDestroy {
+  files: {id: number, name: string}[] = [];
+  filesId = 0;
+  private subscription: Subscription | undefined;
 
-  constructor(private fileService: FileService) {}
+  constructor(private fileService: FileService, private allFilesService: AllFilesService) {}
 
   ngOnInit() {
     this.getFiles();
+    this.subscription = this.allFilesService.refreshFiles$.subscribe(() => {
+      this.getFiles();
+    });
+  }
+
+  ngOnDestroy() {
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   uploadFile(selectedFile: File): void {
     this.fileService.uploadFile(selectedFile).subscribe({
       next: () => {
         console.log('Uploaded file successfully: ' + selectedFile.name );
-        this.filesId.set(this.filesId() + 1);
-        this.files.update(values => [...values, { id: this.filesId(), name: selectedFile.name }]);
+        this.filesId++;
+        this.files.push({ id: this.filesId, name: selectedFile.name });
       },
       error: (err) => {
         console.error('Fehler beim Hochladen der Datei', err);
@@ -67,8 +79,8 @@ export class FileCardComponent implements OnInit {
   deleteFile(file: { id: number; name: string }): void {
     this.fileService.deleteFile(file.name).subscribe({
       next: () => {
-        this.filesId.set(this.filesId() - 1);
-        this.files.update(values => values.filter(f => f.id !== file.id));
+        this.filesId--;
+        this.files = this.files.filter(f => f.id !== file.id);
         console.log('File deleted successfully');
       },
       error: (err) => {
@@ -78,18 +90,18 @@ export class FileCardComponent implements OnInit {
   }
 
   getFiles(): void {
+    this.files = []; // Clear the current files
+    this.filesId = 0;
+
     this.fileService.getFiles().subscribe({
       next: (response) => {
-        this.filesId.set(0);
-        this.files.set([]);
-        console.log("Files:" + this.filesId() + " " + this.files);
         const body = response.body as string[];
         console.log('Files loaded successfully' + body);
 
         if (Array.isArray(body)) {
           for (const file of body) {
-            this.filesId.set(this.filesId() + 1);
-            this.files.update(values => [...values, { id: this.filesId(), name: file }]);
+            this.filesId++;
+            this.files.push({ id: this.filesId, name: file });
           }
         } else {
           console.error('Unexpected response format:', body);

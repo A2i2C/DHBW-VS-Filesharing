@@ -21,3 +21,15 @@ mat-card {
   background-color: lightblue;
   font-weight: bold;
 }
+
+.errorBox {
+  display: flex;
+  justify-content: center;;
+  margin-top: 5px;
+  color: red;
+  max-width: 100%;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: center;
+}
