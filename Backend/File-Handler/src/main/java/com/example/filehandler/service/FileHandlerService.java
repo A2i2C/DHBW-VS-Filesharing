@@ -47,6 +47,12 @@ public class FileHandlerService {
         //Get MetaData from File
         String objectName = fileHandlerFileRequest.file().getOriginalFilename();
         String contentType = fileHandlerFileRequest.file().getContentType();
+        String filename  = fileDetailsRepository.findFilenameByFilenameAndBucketname(bucketName, objectName);
+
+        if (Objects.equals(filename, objectName)) {
+            log.info("File '{}' already exists in bucket '{}'", objectName, bucketName);
+            return;
+        }
 
         try {
             for (String server : initializedServer) {
@@ -68,8 +74,6 @@ public class FileHandlerService {
         catch (Exception e) {
             log.error("Error occurred while uploading file '{}'", fileHandlerFileRequest.file().getOriginalFilename(), e);
         }
-        saveFileDetails(objectName, targetServers, userId, bucketName);
-        log.info("File Details saved successfully to database");
     }
 
     private void saveFileDetails(String filename, List<String> targetServers, Long userID, String bucketName) {
@@ -96,7 +100,6 @@ public class FileHandlerService {
             } catch (Exception e) {
                 log.error("Error occurred while deleting file '{}'", fileName, e);
             }
-
         long userId = fileDetailsRepository.findUserIdByFilename(fileName);
         long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
         fileDetailsRepository.deleteByFileId(fileId);

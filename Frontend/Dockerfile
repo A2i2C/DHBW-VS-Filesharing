@@ -1,11 +1,12 @@
-FROM node:18-alpine
+FROM node:alpine AS build
 
-WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
+WORKDIR /app
+
+COPY package*.json /app/
+
 RUN npm install -g @angular/cli
-RUN npm set strict-ssl false
+
 RUN npm install
-RUN npm set strict-ssl true
 COPY . .
 EXPOSE 4200
 
