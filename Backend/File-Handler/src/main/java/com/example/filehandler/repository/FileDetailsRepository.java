@@ -18,9 +18,6 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails, Intege
     @Query("SELECT filename FROM FileDetails WHERE filename = ?1 AND bucketname = ?2")
     String findFilenameByFilenameAndBucketname(String filename, String bucketname);
 
-    @Query("SELECT fileId FROM FileDetails WHERE bucketname = ?2 AND userId = ?3")
-    String findFileDetailsByBucketnameAndUserId(String bucketname, Long userId, String filename);
-
     //Get FileId to be deleted via filename and userId
     @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND userId = ?2 AND bucketname = ?3")
     Long findFileIdByFilenameAndUserId(String filename, Long userId, String bucketname);

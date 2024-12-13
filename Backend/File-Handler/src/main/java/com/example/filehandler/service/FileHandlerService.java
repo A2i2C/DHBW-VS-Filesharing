@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -97,13 +98,13 @@ public class FileHandlerService {
                 MinioClient minioClient = minioClientFactory.getMinioClient(shard);
                 minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
                 log.info("File '{}' deleted successfully from bucket '{}', in server '{}", fileName, bucketName, shard);
+                long userId = fileDetailsRepository.findUserIdByFilename(fileName);
+                long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
+                fileDetailsRepository.deleteByFileId(fileId);
+                log.info("File '{}' deleted successfully from database", fileName);
             } catch (Exception e) {
                 log.error("Error occurred while deleting file '{}'", fileName, e);
             }
-        long userId = fileDetailsRepository.findUserIdByFilename(fileName);
-        long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
-        fileDetailsRepository.deleteByFileId(fileId);
-        log.info("File '{}' deleted successfully from database", fileName);
     }
 
     public List<String> getAllFilesFromBucket(String bucketName) {

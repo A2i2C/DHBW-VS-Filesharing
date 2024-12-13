@@ -7,7 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {UserService} from '../services/user.service';
 import {UserStateService} from '../services/user-state.service';
 import {FileService} from '../services/file.service';
-import {FileCardComponent} from '../file-card/file-card.component';
+import {AllFilesService} from '../services/all-files.service';
 
 @Component({
   selector: 'app-user-panel',
@@ -24,28 +24,38 @@ import {FileCardComponent} from '../file-card/file-card.component';
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent implements OnInit{
-  protected users = signal<{ username: string; bucketname: string }[]>([]);
+  users: { username: string; bucketname: string }[] = [];
+  protected errorMessage = signal<string>('');
 
   protected searched_user: FormGroup = new FormGroup({
     username: new FormControl(''),
   });
 
-  constructor(private userService: UserService, private userStateService: UserStateService, private fileService: FileService, private fileCardComponent: FileCardComponent) {}
+  constructor(private userService: UserService, private userStateService: UserStateService, private fileService: FileService, private allFilesService: AllFilesService) {}
 
   ngOnInit() {
+    this.errorMessage.set("");
     this.userService.getUserPartner(localStorage.getItem('username')!).subscribe({
       next: (response) => {
-        for(const user of response.body) {
-          this.users.update(values => [...values, {  username: user.username, bucketname: user.bucketname }]);
-        }
+        const users = response.body;
+        users.forEach((user: { username: string; bucketname: string }, index: number) => {
+          this.users.push({ username: user.username, bucketname: user.bucketname });
+
+          // Check if this is the last user
+          if (index === users.length - 1) {
+            this.setSelectedUser(user.username, user.bucketname);
+          }
+        });
       },
       error: (err) => {
-        console.error('Fehler beim holen der Partner', err);
+        this.errorMessage.set("Errors when fetching partners");
+        console.error('Errors when fetching partners', err);
       }
     });
   }
 
   addUser() {
+    this.errorMessage.set("");
     const username = this.searched_user.value.username;
     if (username) {
       this.userService.addPartner(username).subscribe({
@@ -56,15 +66,17 @@ export class UserPanelComponent implements OnInit{
             this.fileService.createBucket(bucketName).subscribe({
               next: () => {
                 console.log(`Bucket ${bucketName} created successfully.`);
-                this.users.update(values => [...values, { username: username, bucketname: bucketName }]);
+                this.users.push({ username: username, bucketname: bucketName });
               },
               error: (err: any) => {
+                this.errorMessage.set("Couldn't start file converstaion with user " + username);
                 console.error('Error creating bucket:', err);
               }
             });
           }
         },
         error: (err: any) => {
+          this.errorMessage.set("Couldn't find user with username: " + username);
           console.error('Error adding partner:', err);
         }
       });
@@ -72,9 +84,10 @@ export class UserPanelComponent implements OnInit{
   }
 
   setSelectedUser(user: string, bucketname: string): void {
+    this.errorMessage.set("");
     this.userStateService.selectedUser.set(user);
     this.fileService.setBucketName(bucketname);
-    this.fileCardComponent.getFiles();
+    this.allFilesService.triggerRefreshFiles();
   }
 
   getSelectedUser(): WritableSignal<string> {
