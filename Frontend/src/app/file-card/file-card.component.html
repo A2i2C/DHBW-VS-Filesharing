@@ -17,4 +17,9 @@
       </mat-card-content>
     </mat-card>
   }
+  @if(errorMessage != '') {
+    <div class="errorBox">
+      {{errorMessage}}
+    </div>
+  }
 </div>

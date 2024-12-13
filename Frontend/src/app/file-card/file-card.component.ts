@@ -24,6 +24,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   files: {id: number, name: string}[] = [];
   filesId = 0;
   private subscription: Subscription | undefined;
+  protected errorMessage = '';
 
   constructor(private fileService: FileService, private allFilesService: AllFilesService) {}
 
@@ -32,6 +33,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
     this.subscription = this.allFilesService.refreshFiles$.subscribe(() => {
       this.getFiles();
     });
+    this.errorMessage = '';
   }
 
   ngOnDestroy() {
@@ -41,6 +43,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   }
 
   uploadFile(selectedFile: File): void {
+    this.errorMessage = '';
     this.fileService.uploadFile(selectedFile).subscribe({
       next: () => {
         console.log('Uploaded file successfully: ' + selectedFile.name );
@@ -54,6 +57,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   }
 
   downloadFile(file: { id: number; name: string }): void {
+    this.errorMessage = '';
     console.log('Download file:', file.name);
     this.fileService.downloadFile(file.name).subscribe({
       next: (blob) => {
@@ -71,12 +75,14 @@ export class FileCardComponent implements OnInit, OnDestroy {
         document.body.removeChild(a);
       },
       error: (err) => {
+        this.errorMessage = 'Server nicht erreichbar.';
         console.error('Failed to download file:', err);
       }
     });
   }
 
   deleteFile(file: { id: number; name: string }): void {
+    this.errorMessage = '';
     this.fileService.deleteFile(file.name).subscribe({
       next: () => {
         this.filesId--;
@@ -90,6 +96,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   }
 
   getFiles(): void {
+    this.errorMessage = '';
     this.files = []; // Clear the current files
     this.filesId = 0;
 
