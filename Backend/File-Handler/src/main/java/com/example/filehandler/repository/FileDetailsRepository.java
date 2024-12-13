@@ -9,20 +9,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileDetailsRepository extends JpaRepository<FileDetails, Integer> {
 
-    @Query("SELECT userId FROM FileDetails WHERE filename = ?1")
-    Long findUserIdByFilename(String filename);
-
     @Query("SELECT shardeins FROM FileDetails WHERE filename = ?1")
     boolean findShardEinsByFilename(String filename);
 
     @Query("SELECT filename FROM FileDetails WHERE filename = ?1 AND bucketname = ?2")
     String findFilenameByFilenameAndBucketname(String filename, String bucketname);
 
-    @Query("SELECT fileId FROM FileDetails WHERE bucketname = ?2 AND userId = ?3")
-    String findFileDetailsByBucketnameAndUserId(String bucketname, Long userId, String filename);
+    //Get FileId via filename
+    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1")
+    Long findFileIdByFilename(String filename);
 
     //Get FileId to be deleted via filename and userId
-    @Query("SELECT fileId FROM FileDetails WHERE filename = ?1 AND userId = ?2 AND bucketname = ?3")
+    @Query("SELECT fd.fileId FROM FileDetails fd JOIN FileUser fu ON fd.fileId = fu.file_id_user WHERE fd.filename = ?1 AND fu.userId = ?2 AND fd.bucketname = ?3")
     Long findFileIdByFilenameAndUserId(String filename, Long userId, String bucketname);
 
     @Transactional

@@ -18,5 +18,5 @@ public class FileDetails {
     private String filename;
     private boolean shardeins;
     private boolean shardzwei;
-    private Long userId;
+    private int yearweek;
 }

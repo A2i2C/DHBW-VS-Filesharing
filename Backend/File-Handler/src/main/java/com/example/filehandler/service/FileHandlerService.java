@@ -2,7 +2,9 @@ package com.example.filehandler.service;
 
 import com.example.filehandler.dto.FileHandlerFileRequest;
 import com.example.filehandler.model.FileDetails;
+import com.example.filehandler.model.FileUser;
 import com.example.filehandler.repository.FileDetailsRepository;
+import com.example.filehandler.repository.FileUserRepository;
 import io.minio.*;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -20,6 +25,7 @@ public class FileHandlerService {
     private final MinioClientFactory minioClientFactory;
     private final FileDistributionService fileDistributionService;
     private final FileDetailsRepository fileDetailsRepository;
+    private final FileUserRepository fileUserRepository;
 
     public void createBucket(String bucketName)
     {
@@ -53,7 +59,6 @@ public class FileHandlerService {
             log.info("File '{}' already exists in bucket '{}'", objectName, bucketName);
             return;
         }
-
         try {
             for (String server : initializedServer) {
                 MinioClient minioClient = minioClientFactory.getMinioClient(server);
@@ -85,9 +90,15 @@ public class FileHandlerService {
         fileDetails.setFilename(filename);
         fileDetails.setShardeins(shard1);
         fileDetails.setShardzwei(shard2);
-        fileDetails.setUserId(userID);
-
+        LocalDateTime now = LocalDateTime.now();
+        int yearweek = Integer.parseInt(now.format(DateTimeFormatter.ofPattern("yyyyww")));
+        fileDetails.setYearweek(yearweek);
         fileDetailsRepository.save(fileDetails);
+
+        FileUser fileUser = new FileUser();
+        fileUser.setUserId(userID);
+        fileUser.setFile_id_user(fileDetails.getFileId());
+        fileUserRepository.save(fileUser);
     }
 
     public void deleteFile(String bucketName, String fileName) {
@@ -97,12 +108,14 @@ public class FileHandlerService {
                 MinioClient minioClient = minioClientFactory.getMinioClient(shard);
                 minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
                 log.info("File '{}' deleted successfully from bucket '{}', in server '{}", fileName, bucketName, shard);
+                long fileId1 = fileDetailsRepository.findFileIdByFilename(fileName);
+                long userId = fileUserRepository.findUserIdByFileId(fileId1);
+                long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
+                fileDetailsRepository.deleteByFileId(fileId);
+                fileUserRepository.deleteByUserId(userId);
             } catch (Exception e) {
                 log.error("Error occurred while deleting file '{}'", fileName, e);
             }
-        long userId = fileDetailsRepository.findUserIdByFilename(fileName);
-        long fileId = fileDetailsRepository.findFileIdByFilenameAndUserId(fileName, userId, bucketName);
-        fileDetailsRepository.deleteByFileId(fileId);
         log.info("File '{}' deleted successfully from database", fileName);
     }
 
