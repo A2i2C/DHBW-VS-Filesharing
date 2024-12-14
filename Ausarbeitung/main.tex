@@ -342,22 +342,9 @@
 			\end{figure}
 			
 		\subsection{Architectual Decision}
-			Microservice Architektur: 
-			Deshalb Modularisierung
-			• Aufteilung der Komponenten
-			• ermöglicht Skalierung
-			• Ausfallsicherheit
+			Die Entscheidung für eine Microservice-Architektur wurde getroffen, um die Modularisierung des Systems zu fördern. Durch die Aufteilung in einzelne, voneinander unabhängige Komponenten wird eine flexible Skalierung ermöglicht, wobei beispielsweise der Filehandler stärker skaliert werden kann als der Userhandler. Zudem erhöht diese Architektur die Ausfallsicherheit, da fehlerhafte Microservices schnell neugestartet werden können, ohne das gesamte System zu beeinträchtigen \cite{taibi2017processes}. Ein weiterer zentraler Vorteil ist die hohe Wartbarkeit: Die Aufteilung in unabhängige, selbstständig deploybare Services erleichtert es Entwicklerteams, Änderungen und Tests durchzuführen, ohne andere Teile des Systems zu beeinflussen, was die verteilte Entwicklung vereinfacht \cite{de2019monolithic}.
 			
-			Unabhängig skalierbar (File handler probably mehr skalieren als User handler)
-			
-			A key benefit of microservices is the maintainability. Breaking a system into independent and self-deployable services aids developer teams to test their services and make changes independently from other developers, simplifying distributed development. \cite{de2019monolithic}.
-			
-			Moreover, faulty microservices can be quickly restarted.  \cite{taibi2017processes}
-			
-			Minio:
-			Finally, MinIO is able to deliver the high-performance object storage that is required by modern big data applications. \cite{makris2022performance}
-			Overall, as indicated in the above figures, MinIO presents the best performance in both the read and write operations. \cite{makris2022performance}
-			S3?
+			MinIO wurde als Objektspeicherlösung gewählt, da es die Hochleistungsanforderungen moderner Big-Data-Anwendungen erfüllt \cite{makris2022performance}. MinIO bietet sowohl bei Lese- als auch bei Schreiboperationen eine herausragende Leistung \cite{makris2022performance}. Als Alternative könnte auch Amazon S3 in Betracht gezogen werden, jedoch überzeugt MinIO durch seine Open-Source-Natur und die Möglichkeit, eine kosteneffiziente, lokal kontrollierte Lösung bereitzustellen.
 			
 			Das Spring Boot Framework ist der De-facto-Standard für Java-Microservice-Architekturen. Es zeichnet sich durch seine Fähigkeit aus, enorme Datenmengen zu verarbeiten, was es besonders für die Big-Data-Industrie attraktiv macht \cite{mythily2022analysis}. Darüber hinaus erleichtert Spring Boot die Entwicklung von RESTful-Webservices und APIs erheblich, wodurch Entwickler ihre Aufgaben schneller und effizienter erledigen können \cite{mythily2022analysis}.
 			
@@ -373,11 +360,13 @@
 				\item MinIO
 			\end{itemize}
 		\subsection{Interaktion Komponenten}
+			\ref{fig:download_sequenz_diagramm}
+			\ref{fig:rest_sequenz_diagramm}
 			\begin{figure}[h]
 				\centering
 				\includegraphics[width=0.8\linewidth]{download\_sequenz\_diagramm}
 				\caption{Sequenz Diagramm für Download}
-				\label{fig:partitionierung}
+				\label{fig:download_sequenz_diagramm}
 			\end{figure}
 			
 			\begin{figure}[h]
