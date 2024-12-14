@@ -373,10 +373,19 @@
 				\item MinIO
 			\end{itemize}
 		\subsection{Interaktion Komponenten}
-			Frontend REST call zu Backend.
-			Filehandler cacht mit Redis und speichert in MariaDB file informationen.
-			Userhandler speichert informationen in der MariaDB.
-			Filehandler schickt und bekommt die Dateien von Minio. Shards
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=0.8\linewidth]{download\_sequenz\_diagramm}
+				\caption{Sequenz Diagramm für Download}
+				\label{fig:partitionierung}
+			\end{figure}
+			
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=0.8\linewidth]{rest\_sequenz\_diagramm}
+				\caption{Sequenz Diagramm für restliche Funktionen}
+				\label{fig:rest_sequenz_diagramm}
+			\end{figure}
 		
 	\section{Anforderungen}
 		Im folgenden sind die Funktionalen sowie die Nichtfunktionalen Anforderungen aufgelistet.
@@ -434,9 +443,11 @@
 					Die zweite Schwierigkeit war der Austausch zwischen den beide Shards. Denn es kam zu Fehler mitunter den Loadbalancen. Um zu wissen auf welchen Shard gespeichert werden muss, musste einen Counter implementiert werden. Das wurde mit Redis gelöst.
 				
 				\subsubsection{Buckets zwischen zwei Benutzer}
-			Buckets schwieriger als einfach Dropbox plattform weil mehr mit S3 Buckets auseinandersetzen und Projekt erweitern
+					Die dritte Schwierigkeit war, dass wir entschieden haben, dass zwei Benutzer miteinander privat austaushen können. Bei einen einfachen Plattform wo es nur ein Bucket gibt wie Dropbox muss man nicht spezifische Buckets kreieren für 2 Benutzer. Bei Bucket kreieren muss man auf Namen achten, man darf ihn nur maximal 63 Zeichen geben. Um das zu lösen haben wir check Frontend und Backend Benutzername Maximal 8 Zeichen. und Bucketname ist user1-user2-bucket.
 			
 	\section{Mögliche Alternativen}
+		Serverless Architektur
+		% Eine serverlose Architektur mit Diensten wie AWS Lambda, Azure Functions oder Google Cloud Functions hätte die Möglichkeit geboten, nur dann Ressourcen zu nutzen, wenn spezifische Aktionen erforderlich sind (z. B. Datei-Upload, Benutzermanagement).
 	
 \chapter{Reflektion}
 	\section{Was kann man anders machen?}
