@@ -361,15 +361,14 @@
 			
 			Das Spring Boot Framework ist der De-facto-Standard für Java-Microservice-Architekturen. Es zeichnet sich durch seine Fähigkeit aus, enorme Datenmengen zu verarbeiten, was es besonders für die Big-Data-Industrie attraktiv macht \cite{mythily2022analysis}. Darüber hinaus erleichtert Spring Boot die Entwicklung von RESTful-Webservices und APIs erheblich, wodurch Entwickler ihre Aufgaben schneller und effizienter erledigen können \cite{mythily2022analysis}.
 			
-			
 	\section{Systemkomponenten}
 		Im Folgenden wird die Lösung mit ihren Komponenten und deren Interaktion dargestellt.
 		\subsection{Komponenten}
 			\begin{itemize}
-				\item Frontend
-				\item Filehandler
-				\item Userhandler
-				\item MariaDB
+				\item Frontend: In Angular geschrieben. -> Routing, HttpClient
+				\item Filehandler: Springboot Mikroservice.
+				\item Userhandler: Springboot Mikroservice. Generiert JWT.
+				\item Datenbank: MariaDB. Vorteile Partitionierung
 				\item Redis
 				\item MinIO
 			\end{itemize}
@@ -397,6 +396,7 @@
 \chapter{Umsetzung}
 	Im Folgenden werden die Umsetzung und mögliche Alternativen dargestellt.
 	\section{Implementierung}
+		Bei der Implementierung schauen wir uns an, wie diese umgesetzt wurde und welche Schwierigkeiten es dabei gab und wie sie gelöst wurden.
 		\subsection{Wie?}
 			Docker compose 
 			
@@ -425,10 +425,15 @@
 			Ein Bucket wenn 2 Personen sich adden
 			
 			\subsection{Schwierigkeiten}
-			Loadbalancing MinIO: Mehrere MinIO Instanzen die miteinander kommunizieren.
+				Folgenden Schwierigkeiten haben Stattgefunden und wie sie gelöst wurden.
+				
+				\subsubsection{Loadbalacing}
+					Die erste Schwierigkeit war das Loadbalancen von den MinIO instanzen, Es war schwierig die Instanzen miteinander kommunizieren zu lassen. Um das zu lösen haben wir uns für eine andere Methode entschieden, und zwar zwei Shards zu kreieren die jeweils drei MinIO Instanzen beinhalten wobei in einer Shard alle 3 MinIO Instanzen das gleiche beinhalten. Somit wenn eine Ausfällt bleiben noch 2k andere.
 			
-			Austausch zwischen beide Shards wegen "Fehler" mit dem Backend und dem Counter -> Redis in kurzer Zeit (eigenen Loadbalancer)
-			
+				\subsubsection{Schardaustausch}
+					Die zweite Schwierigkeit war der Austausch zwischen den beide Shards. Denn es kam zu Fehler mitunter den Loadbalancen. Um zu wissen auf welchen Shard gespeichert werden muss, musste einen Counter implementiert werden. Das wurde mit Redis gelöst.
+				
+				\subsubsection{Buckets zwischen zwei Benutzer}
 			Buckets schwieriger als einfach Dropbox plattform weil mehr mit S3 Buckets auseinandersetzen und Projekt erweitern
 			
 	\section{Mögliche Alternativen}
