@@ -12,7 +12,7 @@
 \def\artDerArbeit{Ausarbeitung}
 \def\meinName{Aziz Carducci, Sven Sendke}
 \def\meinKurs{TINF22F}
-\def\meineMatrikelNr{, 8469950}
+\def\meineMatrikelNr{1965015, 8469950}
 \def\firmenName{Allianz Lebensversicherungs-AG}
 \def\projektBetreuer{Benjamin Salchow}
 \def\abgabeDatum{16.12.2024}
@@ -239,8 +239,8 @@
 			
 			\Large Abgabedatum: \abgabeDatum
 			
-			
 			\begin{table*}[bp]
+				\centering
 				\begin{tabular}{l l}
 					Kurs: & \meinKurs  \\
 					Matrikelnummer: & \meineMatrikelNr  \\
@@ -329,34 +329,111 @@
 \newpage
 \pagenumbering{arabic}
 \chapter{Architektur}
-\section{Allgemein}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\linewidth]{architektur}
-	\caption{Architektur}
-	\label{fig:architektur}
-\end{figure}
-
-\chapter{Architektur}
+	Im Folgenden wird die Architektur im Allgemeinen mit den Systemkomponenten und den Anforderungen dargestellt.
 	\section{Allgemein}
+		Zuerst betrachten wir die Struktur der Architektur und dann die Architectual Desicion.
 		\subsection{Aufbau}
+			Auf der Abbildung ist die Allgemeine Architektur zu sehen \ref{fig:architektur}.
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=\linewidth]{architektur}
+				\caption{Architektur}
+				\label{fig:architektur}
+			\end{figure}
+			
 		\subsection{Architectual Decision}
+			Microservice Architektur: 
+			Deshalb Modularisierung
+			• Aufteilung der Komponenten
+			• ermöglicht Skalierung
+			• Ausfallsicherheit
+			
+			Unabhängig skalierbar (File handler probably mehr skalieren als User handler)
+			
+			A key benefit of microservices is the maintainability. Breaking a system into independent and self-deployable services aids developer teams to test their services and make changes independently from other developers, simplifying distributed development. \cite{de2019monolithic}.
+			
+			Moreover, faulty microservices can be quickly restarted.  \cite{taibi2017processes}
+			
+			Minio:
+			Finally, MinIO is able to deliver the high-performance object storage that is required by modern big data applications. \cite{makris2022performance}
+			Overall, as indicated in the above figures, MinIO presents the best performance in both the read and write operations. \cite{makris2022performance}
+			S3?
+			
 	\section{Systemkomponenten}
+		Im Folgenden wird die Lösung mit ihren Komponenten und deren Interaktion dargestellt.
 		\subsection{Komponenten}
+			\begin{itemize}
+				\item Frontend
+				\item Filehandler
+				\item Userhandler
+				\item MariaDB
+				\item Redis
+				\item MinIO
+			\end{itemize}
 		\subsection{Interaktion Komponenten}
+			Frontend REST call zu Backend.
+			Filehandler cacht mit Redis und speichert in MariaDB file informationen.
+			Userhandler speichert informationen in der MariaDB.
+			Filehandler schickt und bekommt die Dateien von Minio. Shards
+		
 	\section{Anforderungen}
+		Im folgenden sind die Funktionalen sowie die Nichtfunktionalen Anforderungen aufgelistet.
 		\subsection{Funktional}
+			\begin{itemize}
+				\item \textbf{Datei-Upload}: Benutzer können Dateien in verschiedenen Formaten und Größen über eine Benutzeroberfläche oder API hochladen.
+				\item \textbf{Tauschpartner}: Benutzer können einen anderen Benutzer hinzufügen und Dateien untereinander austauschen.
+				\item \textbf{Load Balancing}: Das System verteilt eingehende Uploads und Anfragen automatisch auf verfügbare Server, um eine gleichmäßige Auslastung sicherzustellen.
+				\item \textbf{Speicherung im Object Storage}: Dateien werden in einem verteilten Object-Storage-System gespeichert, das hohe Skalierbarkeit und Zuverlässigkeit bietet.
+			\end{itemize}
 		\subsection{Nichtfunktional}
+			\begin{itemize}
+				\item \textbf{Skalierbarkeit}: Das System muss in der Lage sein, mit einer wachsenden Anzahl von Benutzern und Dateien ohne Leistungseinbußen zu skalieren.
+				\item \textbf{Kompatibilität}: Die Plattform muss mit gängigen Betriebssystemen (Windows, macOS, Linux) und Browsern kompatibel sein.
+			\end{itemize}
 
 \chapter{Umsetzung}
-	\subsection{Implementierung}
-		\subsubsection{Wie?}
-		\subsubsection{Schwierigkeiten}
-	\subsection{Mögliche Alternativen}
+	Im Folgenden werden die Umsetzung und mögliche Alternativen dargestellt.
+	\section{Implementierung}
+		\subsection{Wie?}
+			Docker compose 
+			
+			In der Docker compose werden zwei Shards definiert wobei jede 3 Minio Instanzen hat \ref{fig:shards}. 
+		
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=0.4\linewidth]{shards}
+				\caption{Shards}
+				\label{fig:shards}
+			\end{figure}
+			
+			Partitionierung \ref{fig:partitionierung}.
+			
+			\begin{figure}[h]
+				\centering
+				\includegraphics[width=0.8\linewidth]{partitionierung}
+				\caption{Partitionierung}
+				\label{fig:partitionierung}
+			\end{figure}
+			
+			Redis.
+			
+			k+1 
+			
+			Ein Bucket wenn 2 Personen sich adden
+			
+			\subsection{Schwierigkeiten}
+			Loadbalancing MinIO: Mehrere MinIO Instanzen die miteinander kommunizieren.
+			
+			Austausch zwischen beide Shards wegen "Fehler" mit dem Backend und dem Counter -> Redis in kurzer Zeit (eigenen Loadbalancer)
+			
+			Buckets schwieriger als einfach Dropbox plattform weil mehr mit S3 Buckets auseinandersetzen und Projekt erweitern
+			
+	\section{Mögliche Alternativen}
 	
 \chapter{Reflektion}
-	\subsection{Was kann man anders machen?}
-	\subsection{Größten Herausforderungen und ihre ösung}
+	\section{Was kann man anders machen?}
+	\section{Größten Herausforderungen und ihre Lösung}
+	Die größte Herausforderungen war das Zusammenspielen der verschiedenen Shards mit den MinIO Instanzen, der Datenbank und dem Loadbalancer.
 
 %********************************
 %Literaturverzeichnis

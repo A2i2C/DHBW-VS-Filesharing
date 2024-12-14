@@ -202,5 +202,6 @@ replay_pid*
 .ionide
 
 minio/*
+Database/*
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,visualstudiocode,java,database,angular
