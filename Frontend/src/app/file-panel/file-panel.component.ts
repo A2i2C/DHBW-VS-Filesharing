@@ -15,6 +15,7 @@ export class FilePanelComponent {
   constructor(private userStateService: UserStateService) {}
 
   getSelectedUser(): WritableSignal<string> {
+    // get the selected user to know which user and which files to display
     return this.userStateService.getSelectedUser();
   }
 }

@@ -27,6 +27,7 @@ export class SignupComponent {
   protected errorMessage: string = '';
 
   protected user: FormGroup = new FormGroup({
+    // valide username and password (it's also done in the backend). Maximum length of 8 characters is especially important to prevent the Bucket name from being too long (maximum of 63 characters).
     username: new FormControl('', [
       Validators.required,
       Validators.minLength(3),

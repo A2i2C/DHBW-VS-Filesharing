@@ -13,5 +13,5 @@ import {FilePanelComponent} from '../file-panel/file-panel.component';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-
+  // Home component to display user and file panels
 }

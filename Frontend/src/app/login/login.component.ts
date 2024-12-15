@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
-    // Use window.history.state to reliably fetch navigation extras to get success message
+    // Use window.history.state to reliably fetch navigation extras to get success message meaning the user was redirected from the register page
     const state = window.history.state as { message?: string };
     this.successMessage = state?.message || null;
   }
@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit {
         console.log('Login successful:', response);
         const responseBody = response.body;
         if (responseBody && responseBody.token) {
+          // Store the token in local storage for future requests
           localStorage.setItem('username', responseBody.username);
           localStorage.setItem('userID', responseBody.userID);
           localStorage.setItem('token', responseBody.token);

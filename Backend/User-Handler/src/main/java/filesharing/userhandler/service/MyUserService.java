@@ -22,7 +22,7 @@ public class MyUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
+        // get the user from the database and return it as a UserDetails object
         Optional<MyUser> user = repository.findByUsername(username);
         if (user.isPresent()) {
             var userObj = user.get();

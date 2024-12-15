@@ -7,6 +7,6 @@ export class UserStateService {
   selectedUser: WritableSignal<string> = signal('');
 
   getSelectedUser(): WritableSignal<string> {
-    return this.selectedUser;
+    return this.selectedUser; // get request for the selected user to use it globally
   }
 }

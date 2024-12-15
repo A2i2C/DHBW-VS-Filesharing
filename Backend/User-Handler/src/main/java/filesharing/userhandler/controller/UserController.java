@@ -8,8 +8,9 @@ import filesharing.userhandler.repository.MyUserRepository;
 import filesharing.userhandler.model.UserCommunication;
 import filesharing.userhandler.repository.UserCommunicationRepository;
 import filesharing.userhandler.service.UserCommunicationService;
-import filesharing.userhandler.service.FileHandlerService;
+import filesharing.userhandler.service.FileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/user")
@@ -27,7 +29,7 @@ public class UserController {
     private UserCommunicationService userCommunicationService;
 
     @Autowired
-    private FileHandlerService fileHandlerService;
+    private FileService fileService;
 
     @Autowired
     private UserCommunicationRepository userCommunicationRepository;
@@ -47,12 +49,12 @@ public class UserController {
     public ResponseEntity<Map<String, String>> addPerson(@RequestBody TwoUserDto request) {
         String currentUser = request.username_1();
         String partnerName = request.username_2();
-        System.out.println("Received request to add partner: " + partnerName);
+        log.info("Received request to add partner: " + partnerName);
 
         // Generate bucket name (sorted to ensure consistency)
         String bucketName = createConsistentBucketName(currentUser, partnerName);
 
-        // Check if communication already exists
+        // Check if communication already exists (bidirectional check as bucket name is consistent and always starts with the user with the lexicographically smaller username)
         boolean communicationExists = userCommunicationRepository.existsByUser1UsernameAndUser2UsernameOrUser1UsernameAndUser2Username(
                 currentUser, partnerName, partnerName, currentUser);
 
@@ -62,7 +64,7 @@ public class UserController {
         }
 
         try {
-            fileHandlerService.createBucket(bucketName);
+            fileService.createBucket(bucketName);
 
             // Retrieve user entities
             MyUser user1 = myUserRepository.findByUsername(currentUser)
@@ -77,6 +79,7 @@ public class UserController {
             userCommunication.setBucketname(bucketName);
             userCommunicationRepository.save(userCommunication);
 
+            log.info("UserCommunication entry created between {} and {}: ", currentUser,  partnerName);
             return ResponseEntity.ok(Map.of("message", "Bucket created successfully", "bucketName", bucketName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

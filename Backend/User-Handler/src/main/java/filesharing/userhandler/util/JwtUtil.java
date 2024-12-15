@@ -15,17 +15,18 @@ public class JwtUtil {
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateToken(String username) {
-        // 1 day in milliseconds
-        long EXPIRATION_TIME = 86400000;
+        // Generate a token with the username
+        long EXPIRATION_TIME = 86400000; // 1 day in milliseconds
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // sign with the secret key
                 .compact();
     }
 
     public String extractUsername(String token) {
+        // Extract the username from the token
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
