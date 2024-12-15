@@ -349,6 +349,9 @@
 			\subsubsection{Spring Boot}
 			Das Spring Boot Framework ist der De-facto-Standard für Java-Microservice-Architekturen. Es zeichnet sich durch seine Fähigkeit aus, enorme Datenmengen zu verarbeiten, was es besonders für die Big-Data-Industrie attraktiv macht \cite{mythily2022analysis}. Darüber hinaus erleichtert Spring Boot die Entwicklung von RESTful-Webservices und APIs erheblich, wodurch Entwickler ihre Aufgaben schneller und effizienter erledigen können \cite{mythily2022analysis}.
 			
+			\subsubsection{Relationale Datenbank}
+			Der Vorteil der relationalen Datenbank besteht darin, dass sie eine solide Grundlage für die Behandlung von Redundanz und Konsistenz von Beziehungen bietet. \cite{codd1970relational}. Dies ist wichtig, um die Daten der Dateien konsistent zu halten. 
+			
 	\section{Systemkomponenten}
 		Im Folgenden wird die Lösung mit ihren Komponenten und deren Interaktion dargestellt.
 		\subsection{Komponenten}
@@ -356,12 +359,12 @@
 				\item Frontend (Angular): Angular erleichtert sowohl das Routing durch Angular Router als auch REST durch den Angular Service HttpClient.
 				\item Filehandler (Spring Boot): Dieser Microservice kümmert sich um die Benutzerregistrierung und -anmeldung und stellt den JWT bereit.
 				\item Userhandler (Spring Boot): Dieser Microservice kümmert sich um alle Funktionen, die mit Dateien zu tun haben.
-				\item Datenbank (MariaDB):  Der Vorteil der relationalen Datenbank besteht darin, dass sie eine solide Grundlage für die Behandlung von Redundanz und Konsistenz von Beziehungen bietet. \cite{codd1970relational}. Dies ist wichtig, um die Daten der Dateien konsistent zu halten. Das ERM unserer Datenbank ist in Abbildung 	\ref{fig:erm} dargestellt.
+				\item Datenbank (MariaDB):  Speichert Benutzer, Datei-Metadaten und begonnene Konversationen zwischen 2 Benutzern. Das ERM der Datenbank ist in Abbildung \ref{fig:erm} dargestellt.
 				\item Redis: Dient als Cache für den Filehandler, mehr dazu später.
 				\item Objektspeicherung (MinIO): Drei Minio Instanzen befinden sich in einem Shard. In einem Shard speichern sie dasselbe, aber ansonsten wechseln sie zwischen den Shards, um die Datei zu speichern.
 				\item Loadbalancer (Nginx): Verteilt alle Anfragen des Benutzers.
 			\end{itemize}
-			
+						
 			\begin{figure}[h]
 				\centering
 				\includegraphics[width=\linewidth]{erm}
@@ -390,7 +393,7 @@
 		Im folgenden sind die Funktionalen sowie die Nichtfunktionalen Anforderungen aufgelistet.
 		\subsection{Funktional}
 			\begin{itemize}
-				\item \textbf{Datei-Upload}: Benutzer können Dateien in verschiedenen Formaten und Größen über eine Benutzeroberfläche oder API hochladen.
+				\item \textbf{Datei-Upload}: Benutzer können Dateien in verschiedenen Formaten über eine Benutzeroberfläche oder API hochladen.
 				\item \textbf{Tauschpartner}: Benutzer können einen anderen Benutzer hinzufügen und Dateien untereinander austauschen.
 				\item \textbf{Load Balancing}: Das System verteilt eingehende Uploads und Anfragen automatisch auf verfügbare Server, um eine gleichmäßige Auslastung sicherzustellen.
 				\item \textbf{Speicherung im Object Storage}: Dateien werden in einem verteilten Object-Storage-System gespeichert, das hohe Skalierbarkeit und Zuverlässigkeit bietet.
@@ -444,7 +447,7 @@
 					Die dritte Schwierigkeit war, dass wir entschieden haben, dass zwei Benutzer miteinander privat austaushen können. Bei einen einfachen Plattform wo es nur ein Bucket gibt wie Dropbox muss man nicht spezifische Buckets kreieren für 2 Benutzer. Bei Bucket kreieren muss man auf Namen achten, man darf ihn nur maximal 63 Zeichen geben. Um das zu lösen haben wir check Frontend und Backend Benutzername Maximal 8 Zeichen. und Bucketname ist user1-user2-bucket.
 			
 	\section{Mögliche Alternativen}
-		Auch wenn es bei der Programmierung natürlich Alternativen gibt, wie z.B. weniger Logik im Backend, weniger Speicher in der Datenbank, mehr Speicher in der Datenbank, ist Amazon S3 immer noch eine der besten Möglichkeiten. Als Alternative könnte man andere Open Source S3-kompatible Software wie Ceph oder GlusterFS verwenden. Anstelle von S3 könnte auch Hadoop HDFS (Hadoop Distributed File System) verwendet werden. Das ist auch ein weit verbreitetes verteiltes Dateisystem, wird aber mehr im Bereich Big Data und Analytics eingesetzt. ist aber im Gegensatz zu den anderen nicht S3 kompatibel.
+		Obwohl es natürlich Alternativen in der Programmierung gibt, wie z.B. weniger oder mehr Metadaten für die verschiedenen benötigten Informationen zu speichern, wäre eine Alternative in größerem Umfang andere Open Source S3-kompatible Software wie Ceph oder GlusterFS zu verwenden. Anstelle von S3 könnte auch Hadoop HDFS (Hadoop Distributed File System) verwendet werden. Dies ist ebenfalls ein weit verbreitetes verteiltes Dateisystem, wird aber mehr im Bereich Big Data und Analytics eingesetzt. ist aber im Gegensatz zu den anderen nicht S3-kompatibel.
 	
 \chapter{Reflektion}
 	Die folgenden Überlegungen zeigen, was wir anders machen können und was die größten Herausforderungen und ihre Lösungen sind.
