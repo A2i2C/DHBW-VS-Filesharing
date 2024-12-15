@@ -329,7 +329,7 @@
 	\section{Allgemein}
 		Zuerst betrachten wir die Struktur der Architektur und dann die Architectual Desicion.
 		\subsection{Aufbau}
-			Auf der Abbildung ist die Allgemeine Architektur zu sehen \ref{fig:architektur}.
+			Die Abbildung \ref{fig:architektur} zeigt die Gesamtarchitektur. Auf die einzelnen Aspekte wird in den folgenden Punkten eingegangen.
 			\begin{figure}[h]
 				\centering
 				\includegraphics[width=\linewidth]{architektur}
@@ -338,43 +338,39 @@
 			\end{figure}
 			
 		\subsection{Architectual Decision}
+			Folgende Architectual Decision wurden getroffen.
+			
+			\subsubsection{Microservice-Architektur}
 			Die Entscheidung für eine Microservice-Architektur wurde getroffen, um die Modularisierung des Systems zu fördern. Durch die Aufteilung in einzelne, voneinander unabhängige Komponenten wird eine flexible Skalierung ermöglicht, wobei beispielsweise der Filehandler stärker skaliert werden kann als der Userhandler. Zudem erhöht diese Architektur die Ausfallsicherheit, da fehlerhafte Microservices schnell neugestartet werden können, ohne das gesamte System zu beeinträchtigen \cite{taibi2017processes}. Ein weiterer zentraler Vorteil ist die hohe Wartbarkeit: Die Aufteilung in unabhängige, selbstständig deploybare Services erleichtert es Entwicklerteams, Änderungen und Tests durchzuführen, ohne andere Teile des Systems zu beeinflussen, was die verteilte Entwicklung vereinfacht \cite{de2019monolithic}.
 			
-			MinIO wurde als Objektspeicherlösung gewählt, da es die Hochleistungsanforderungen moderner Big-Data-Anwendungen erfüllt \cite{makris2022performiance}. MinIO bietet sowohl bei Lese- als auch bei Schreiboperationen eine herausragende Leistung \cite{makris2022performance}. Als Alternative könnte auch Amazon S3 in Betracht gezogen werden, jedoch überzeugt MinIO durch seine Open-Source-Natur und die Möglichkeit, eine kosteneffiziente, lokal kontrollierte Lösung bereitzustellen.
+			\subsubsection{MinIO}
+			MinIO wurde als Objektspeicherlösung gewählt, da es die Hochleistungsanforderungen moderner Big-Data-Anwendungen erfüllt \cite{makris2022performiance}. MinIO bietet sowohl bei Lese- als auch bei Schreiboperationen eine herausragende Leistung \cite{makris2022performance}. Wir haben uns für eine S3-Kompatible Objektspeicher-Server entschieden, weil es eine der weit verbreitesten Objektspeicherungs Platforme ist und welche auch Sehr gut dokumentiert ist, aber unteranderem auch da es bei sehr vielen großen Unternehmen genutzt wird und wir diese Erfahrung mitnehmen wollten, da das sehr Praxis bezogen ist.
 			
+			\subsubsection{Spring Boot}
 			Das Spring Boot Framework ist der De-facto-Standard für Java-Microservice-Architekturen. Es zeichnet sich durch seine Fähigkeit aus, enorme Datenmengen zu verarbeiten, was es besonders für die Big-Data-Industrie attraktiv macht \cite{mythily2022analysis}. Darüber hinaus erleichtert Spring Boot die Entwicklung von RESTful-Webservices und APIs erheblich, wodurch Entwickler ihre Aufgaben schneller und effizienter erledigen können \cite{mythily2022analysis}.
-			
-			Würde natürlich irgendwo erwähnen, das wir uns für S3 entschieden haben, wegen erstens das ist eine der weit verbreitesten Objektspeicherungs Platforme ist und welche auch Sehr gut dokumentiert ist, aber unteranderem auch da es bei sehr vielen großen Unternehmen genutzt wird und wir diese Erfahrung mitnehmen wollten, da das schon sehr Praxis bezogen ist auch für Später
-			Das können wir perfekt kombinieren mit dem hier
 			
 	\section{Systemkomponenten}
 		Im Folgenden wird die Lösung mit ihren Komponenten und deren Interaktion dargestellt.
 		\subsection{Komponenten}
 			\begin{itemize}
-				\item Frontend: In Angular geschrieben. -> Routing, HttpClient
-				\item Filehandler: Springboot Mikroservice.
-				\item Userhandler: Springboot Mikroservice. Generiert JWT.
-				\item Datenbank: MariaDB. Vorteile Partitionierung
-				\item Redis
-				\item MinIO
+				\item Frontend (Angular): Angular erleichtert sowohl das Routing durch Angular Router als auch REST durch den Angular Service HttpClient.
+				\item Filehandler (Spring Boot): Dieser Microservice kümmert sich um die Benutzerregistrierung und -anmeldung und stellt den JWT bereit.
+				\item Userhandler (Spring Boot): Dieser Microservice kümmert sich um alle Funktionen, die mit Dateien zu tun haben.
+				\item Datenbank (MariaDB):  Der Vorteil der relationalen Datenbank besteht darin, dass sie eine solide Grundlage für die Behandlung von Redundanz und Konsistenz von Beziehungen bietet. \cite{codd1970relational}. Dies ist wichtig, um die Daten der Dateien konsistent zu halten. Das ERM unserer Datenbank ist in Abbildung 	\ref{fig:erm} dargestellt.
+				\item Redis: Dient als Cache für den Filehandler, mehr dazu später.
+				\item Objektspeicherung (MinIO): Drei Minio Instanzen befinden sich in einem Shard. In einem Shard speichern sie dasselbe, aber ansonsten wechseln sie zwischen den Shards, um die Datei zu speichern.
+				\item Loadbalancer (Nginx): Verteilt alle Anfragen des Benutzers.
 			\end{itemize}
-			
-			rther advantage of the relational view is that it
-			forms a sound basis for treating derivability, redundancy,
-			and consistency of relations--these are discussed in Section
-			2. \cite{codd1970relational}
-			
-			\ref{fig:erm}
 			
 			\begin{figure}[h]
 				\centering
-				\includegraphics[width=0.8\linewidth]{erm}
+				\includegraphics[width=\linewidth]{erm}
 				\caption{ERM}
 				\label{fig:erm}
 			\end{figure}
 			
 		\subsection{Interaktion Komponenten}
-			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Download-Funktion in Abbildung \ref{fig:download_sequenz_diagramm} und die anderen Funktionen wie Login/Signup, Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind.
+			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Download-Funktion in Abbildung \ref{fig:download_sequenz_diagramm} und die anderen Funktionen wie Benutzerregistrierung und -anmeldung , Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind.
 			
 			\begin{figure}[h]
 				\centering
@@ -409,50 +405,31 @@
 	Im Folgenden werden die Umsetzung und mögliche Alternativen dargestellt.
 	\section{Implementierung}
 		Bei der Implementierung schauen wir uns an, wie diese umgesetzt wurde und welche Schwierigkeiten es dabei gab und wie sie gelöst wurden.
-		\subsection{Wie?}
-			Docker compose 
-			
-			In der Docker compose werden zwei Shards definiert wobei jede 3 Minio Instanzen hat \ref{fig:shards}. 
+		\subsection{Wie wird die Architektur umgesetzt?}
+			\subsubsection{Docker Compose}
+				Die Architektur wird mit Docker Compose erstellt. Das Frontend, die Microservices, die Datenbank, der Loadbalancer, Redis und die Shards mit den MinIO-Instanzen werden mit den entsprechenden Dockerfiles gebaut. Die sich daraus ergebende Shard-Struktur ist in Abbildung \ref{fig:shards} dargestellt. Wie zu sehen ist, wird das Prinzip mit 2k+1 für die Ausfallsicherheit eingehalten, auch werden in unserem Beispiel jeweils drei Microservices gestartet.
 		
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=0.4\linewidth]{shards}
-				\caption{Shards}
-				\label{fig:shards}
-			\end{figure}
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.4\linewidth]{shards}
+					\caption{Shards}
+					\label{fig:shards}
+				\end{figure}
 			
-			Partitionierung \ref{fig:partitionierung}.
-			
-			\begin{figure}[h]
-				\centering
-				\includegraphics[width=0.8\linewidth]{partitionierung}
-				\caption{Partitionierung}
-				\label{fig:partitionierung}
-			\end{figure}
-			
-			Horizontal partitioning of
-			database
-			Horizontal database partitioning breaks down
-			a relational table into smaller pieces, called
-			partitions, according to the range of values of
-			a given attribute or combination of attributes,
-			called a partition key. Horizontal partitioning
-			reduces the total number of read operations
-			needed to access the rows determined by the
-			values of the partition key provided in a
-			query. Figure 3 shows how horizontal
-			partitioning works, depending on one of the
-			attributes that is the year.
-			It has four values: 2009, 2008, 2007 and
-			2006. Therefore, for queries only the student
-			information retrieving to each year will be
-			accessed \cite{alsultanny2010database}
-			
-			Redis.
-			
-			k+1 
-			
-			Ein Bucket wenn 2 Personen sich adden
+			\subsubsection{Partitionierung}
+				Wir machen auch eine Horizontale Partitionierung der Datenbank. Die horizontale Datenbankpartitionierung unterteilt eine relationale Tabelle in kleinere Teile, die so genannten Partitionen, entsprechend dem Wertebereich eines bestimmten Attributs oder einer Kombination von Attributen, dem so genannten Partitionsschlüssel. Die horizontale Partitionierung verringert die Gesamtzahl der Lesevorgänge, die für den Zugriff auf die Zeilen erforderlich sind, die durch die Werte des in einer Abfrage angegebenen Partitionsschlüssels bestimmt werden \cite{alsultanny2010database}. Abbildung \ref{fig:partitionierung} zeigt, wie die horizontale Partitionierung in Abhängigkeit von einem der Attribute, nämlich der Woche, funktioniert. Daher wird bei Abfragen nur auf die Informationen zu jeder Woche zugegriffen.
+				
+				\begin{figure}[h]
+					\centering
+					\includegraphics[width=0.8\linewidth]{partitionierung}
+					\caption{Partitionierung}
+					\label{fig:partitionierung}
+				\end{figure}
+				
+				\subsubsection{Redis}
+				
+				\subsubsection{Buckets}
+					Das Ziel war nicht, ein Dropbox-artiges Filesharing zu haben, sondern dass zwei Benutzer Dateien austauschen können. Dies wurde umgesetzt, indem zwei Benutzer sich gegenseitig hinzufügen können und dann ein Bucket zwischen den beiden erstellt wird, in dem die Dateien nur für die beiden gespeichert werden.
 			
 			\subsection{Schwierigkeiten}
 				Folgenden Schwierigkeiten haben Stattgefunden und wie sie gelöst wurden.
@@ -467,18 +444,18 @@
 					Die dritte Schwierigkeit war, dass wir entschieden haben, dass zwei Benutzer miteinander privat austaushen können. Bei einen einfachen Plattform wo es nur ein Bucket gibt wie Dropbox muss man nicht spezifische Buckets kreieren für 2 Benutzer. Bei Bucket kreieren muss man auf Namen achten, man darf ihn nur maximal 63 Zeichen geben. Um das zu lösen haben wir check Frontend und Backend Benutzername Maximal 8 Zeichen. und Bucketname ist user1-user2-bucket.
 			
 	\section{Mögliche Alternativen}
-		Zu deiner Frage wegen Alternativen, ich würde schreiben, während die Programmierung natürlich alternative Wege haben kann, wie zmb das wir weniger Logik im Backend machen, weniger SPeichern in der Datenbank, mehr speichern in der Datenbank, etc.  ich glaube du weißt worauf ich hinaus will, sind Amazon S3 Speicherungsfunktionen immernoch eine der besten Wahlen.
-		Was man als Alternative nutzen könnte wären andere Open Source S3 Kompatible Software wie Ceph oder GlusterFS
-		
-		aber auch haetten wir Hadoop HDFS (Hadoop Distributed File System) nutzen können. Es ist auch ein Ein weit verbreitetes verteiltes Dateisystem, wird aber öfter in Big Data und Analytik verwendet. ist aber im gegensatz zu den anderen nicht S3 Kompatibel
+		Auch wenn es bei der Programmierung natürlich Alternativen gibt, wie z.B. weniger Logik im Backend, weniger Speicher in der Datenbank, mehr Speicher in der Datenbank, ist Amazon S3 immer noch eine der besten Möglichkeiten. Als Alternative könnte man andere Open Source S3-kompatible Software wie Ceph oder GlusterFS verwenden. Anstelle von S3 könnte auch Hadoop HDFS (Hadoop Distributed File System) verwendet werden. Das ist auch ein weit verbreitetes verteiltes Dateisystem, wird aber mehr im Bereich Big Data und Analytics eingesetzt. ist aber im Gegensatz zu den anderen nicht S3 kompatibel.
 	
 \chapter{Reflektion}
+	Die folgenden Überlegungen zeigen, was wir anders machen können und was die größten Herausforderungen und ihre Lösungen sind.
+	
 	\section{Was kann man anders machen?}
-	und zu dem hier, würde ich auf jeden fall unser Datenbanksystem erwähnen, das wir das von anfang an richtig aufsetzen haetten sollen, da wir schon sehr oft dran rumgepfuscht haben bis es geklappt hat wie wir es wollten und wir auch von Anfang an direkt Skalierbar und in der Konvention denken sollten
-	(ich weiß es war meine Aufgabe aber fuck that, wir sind ja ein Team gebe dir auch immer credits mit dem S3 und MinIO zeugs also psch)
+	Ein entscheidender Lernpunkt während der Entwicklung war das Datenbanksystem. Rückblickend wäre es sinnvoll gewesen, dieses von Anfang an korrekt zu konzipieren und aufzusetzen. Stattdessen mussten wir es mehrfach anpassen und nachbessern, bis es schließlich wie gewünscht funktionierte. Besonders wichtig wäre es gewesen, von Beginn an auf Skalierbarkeit und die Einhaltung etablierter Konventionen zu achten. Dies hätte nicht nur spätere Komplikationen vermieden, sondern auch die Integration und Wartung des Systems erheblich erleichtert. Dieser Aspekt unterstreicht, wie entscheidend ein solides Fundament bei der Entwicklung komplexer Systeme ist.
 	
 	\section{Größten Herausforderungen und ihre Lösung}
-	Die größte Herausforderungen war das Zusammenspielen der verschiedenen Shards mit den MinIO Instanzen, der Datenbank und dem Loadbalancer.
+	Die größte Herausforderung lag in der Koordination und Integration der verschiedenen Systemkomponenten, insbesondere der Shards mit den MinIO-Instanzen, der Datenbank und dem Loadbalancer. Anfangs scheiterte die Kommunikation zwischen den Instanzen, was dazu führte, dass Dateien nicht korrekt gespeichert oder geladen wurden. Dieses Problem lösten wir durch die Einführung eines zweistufigen Shard-Systems, bei dem jeweils drei MinIO-Instanzen innerhalb eines Shards die gleichen Daten speichern. Dieses Redundanzkonzept gewährleistet die Ausfallsicherheit und ermöglicht den reibungslosen Betrieb, selbst wenn eine Instanz ausfällt.
+	
+	Ein weiteres Problem bestand im Austausch zwischen den beiden Shards. Hier traten Fehler auf, die durch inkorrekte Loadbalancing-Mechanismen verursacht wurden. Um zu bestimmen, welcher Shard für die Speicherung verwendet werden sollte, führten wir einen Zähler ein, der mit Redis implementiert wurde. Redis diente dabei als schneller und zuverlässiger Speicher für den aktuellen Status des Counters.
 
 %********************************
 %Literaturverzeichnis
