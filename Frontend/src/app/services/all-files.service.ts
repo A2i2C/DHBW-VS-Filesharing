@@ -10,6 +10,6 @@ export class AllFilesService {
   refreshFiles$ = this.refreshFilesSubject.asObservable();
 
   triggerRefreshFiles() {
-    this.refreshFilesSubject.next();
+    this.refreshFilesSubject.next(); // Emit an event to all subscribers so that the files list can be refreshed
   }
 }

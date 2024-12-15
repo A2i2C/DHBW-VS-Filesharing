@@ -15,7 +15,6 @@ import {FileCardComponent} from '../file-card/file-card.component';
 })
 export class FileUploadCardComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-
   selectedFile: File | null = null;
 
   constructor(private fileCard: FileCardComponent) {}
@@ -26,9 +25,10 @@ export class FileUploadCardComponent {
 
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
+    // Check if a file was selected
     if (target.files && target.files.length > 0) {
-      this.selectedFile = target.files[0];
-      console.log('Selected file:', this.selectedFile.name);
+      this.selectedFile = target.files[0]; // Only upload the first selected file (it is possible to select multiple files)
+      console.log('Selected file: ', this.selectedFile.name);
       this.fileCard.uploadFile(this.selectedFile);
       this.selectedFile = null; // Reset file after uploading
     }

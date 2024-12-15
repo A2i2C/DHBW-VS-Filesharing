@@ -21,14 +21,17 @@ import {Subscription} from 'rxjs';
   styleUrl: './file-card.component.scss'
 })
 export class FileCardComponent implements OnInit, OnDestroy {
+  // Keep track of the files and their IDs to display them
   files: {id: number, name: string}[] = [];
   filesId = 0;
+  // Subscription to refresh the files
   private subscription: Subscription | undefined;
   protected errorMessage = '';
 
   constructor(private fileService: FileService, private allFilesService: AllFilesService) {}
 
   ngOnInit() {
+    // get all the files for the opened bucket and set the subscription for future updates of the files
     this.getFiles();
     this.subscription = this.allFilesService.refreshFiles$.subscribe(() => {
       this.getFiles();
@@ -51,7 +54,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
         this.files.push({ id: this.filesId, name: selectedFile.name });
       },
       error: (err) => {
-        console.error('Fehler beim Hochladen der Datei', err);
+        console.error('Error while uploading file: ', err);
       }
     });
   }
@@ -76,7 +79,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.errorMessage = 'Server nicht erreichbar.';
-        console.error('Failed to download file:', err);
+        console.error('Failed to download file: ', err);
       }
     });
   }
@@ -86,6 +89,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
     this.fileService.deleteFile(file.name).subscribe({
       next: () => {
         this.filesId--;
+        // filter out the deleted file through its ID (the name is not unique so it would not be enough)
         this.files = this.files.filter(f => f.id !== file.id);
         console.log('File deleted successfully');
       },
@@ -111,11 +115,11 @@ export class FileCardComponent implements OnInit, OnDestroy {
             this.files.push({ id: this.filesId, name: file });
           }
         } else {
-          console.error('Unexpected response format:', body);
+          console.error('Unexpected response format: ', body);
       }
     },
     error: (err) => {
-      console.error('Failed to get files:', err);
+      console.error('Failed to get files: ', err);
     }
     });
   }

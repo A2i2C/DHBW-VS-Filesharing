@@ -3,8 +3,8 @@ import {inject} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService); // Inject AuthService
-  const router = inject(Router); // Inject Router
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
   const token = localStorage.getItem('token');
   if (token && authService.isTokenValid(token)) {

@@ -26,7 +26,7 @@ export class HeaderComponent {
 
   logout(): void{
     this.userStateService.selectedUser.set(''); // Clear selected user
-    this.fileService.setBucketName(''); // Reset bucket name in FileService
+    this.fileService.setBucketName(''); // Reset global bucket name
     this.allFilesService.triggerRefreshFiles(); // Clear file view
     this.authService.logout();
   }

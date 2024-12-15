@@ -21,6 +21,7 @@ export class AuthService {
   }
 
   logout() {
+    // remove all items from local storage  so that the user is completely logged out
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('userID');
@@ -28,6 +29,7 @@ export class AuthService {
   }
 
   getAuthHeaders() {
+    // Get the token from local storage and set it in the headers for the requests
     const token = localStorage.getItem('token');
     return {
       headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),

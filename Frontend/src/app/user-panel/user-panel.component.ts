@@ -24,7 +24,7 @@ import {AllFilesService} from '../services/all-files.service';
   styleUrl: './user-panel.component.scss'
 })
 export class UserPanelComponent implements OnInit{
-  users: { username: string; bucketname: string }[] = [];
+  users: { username: string; bucketname: string }[] = []; // List of users to display
   protected errorMessage = signal<string>('');
 
   protected searched_user: FormGroup = new FormGroup({
@@ -41,7 +41,7 @@ export class UserPanelComponent implements OnInit{
         users.forEach((user: { username: string; bucketname: string }, index: number) => {
           this.users.push({ username: user.username, bucketname: user.bucketname });
 
-          // Check if this is the last user
+          // Check if this is the last user to then select it to remove the bug of still displaying the last user's files
           if (index === users.length - 1) {
             this.setSelectedUser(user.username, user.bucketname);
           }
@@ -49,12 +49,13 @@ export class UserPanelComponent implements OnInit{
       },
       error: (err) => {
         this.errorMessage.set("Errors when fetching partners");
-        console.error('Errors when fetching partners', err);
+        console.error('Errors when fetching partners: ', err);
       }
     });
   }
 
   addUser() {
+    // add the partner and create the bucket
     this.errorMessage.set("");
     const username = this.searched_user.value.username;
     if (username) {
@@ -84,6 +85,7 @@ export class UserPanelComponent implements OnInit{
   }
 
   setSelectedUser(user: string, bucketname: string): void {
+    // Set the selected user and the bucket name and refresh the files
     this.errorMessage.set("");
     this.userStateService.selectedUser.set(user);
     this.fileService.setBucketName(bucketname);
