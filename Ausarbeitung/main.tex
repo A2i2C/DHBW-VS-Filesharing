@@ -373,11 +373,11 @@
 			\end{figure}
 			
 		\subsection{Interaktion Komponenten}
-			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Download-Funktion in Abbildung \ref{fig:download_sequenz_diagramm} und die anderen Funktionen wie Benutzerregistrierung und -anmeldung , Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind.
+			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Upload-Funktion in Abbildung \ref{fig:download_sequenz_diagramm} und die anderen Funktionen wie Benutzerregistrierung und -anmeldung , Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind. Die Entscheidung Upload-File einzeln darzustellen, war weil es unsere Hauptfunktion ist, wo auch am meisten passiert.
 			
 			\begin{figure}[h]
 				\centering
-				\includegraphics[width=0.8\linewidth]{download\_sequenz\_diagramm}
+				\includegraphics[width=0.95\linewidth]{download\_sequenz\_diagramm}
 				\caption{Sequenz Diagramm für Download}
 				\label{fig:download_sequenz_diagramm}
 			\end{figure}
@@ -414,14 +414,13 @@
 		
 				\begin{figure}[h]
 					\centering
-					\includegraphics[width=0.4\linewidth]{shards}
+					\includegraphics[width=0.8\linewidth]{shards}
 					\caption{Shards}
 					\label{fig:shards}
 				\end{figure}
 			
 			\subsubsection{Partitionierung}
-				Wir machen auch eine Horizontale Partitionierung der Datenbank. Die horizontale Datenbankpartitionierung unterteilt eine relationale Tabelle in kleinere Teile, die so genannten Partitionen, entsprechend dem Wertebereich eines bestimmten Attributs oder einer Kombination von Attributen, dem so genannten Partitionsschlüssel. Die horizontale Partitionierung verringert die Gesamtzahl der Lesevorgänge, die für den Zugriff auf die Zeilen erforderlich sind, die durch die Werte des in einer Abfrage angegebenen Partitionsschlüssels bestimmt werden \cite{alsultanny2010database}. Abbildung \ref{fig:partitionierung} zeigt, wie die horizontale Partitionierung in Abhängigkeit von einem der Attribute, nämlich der Woche, funktioniert. Daher wird bei Abfragen nur auf die Informationen zu jeder Woche zugegriffen.
-				
+				Wir haben die horizontale Partitionierung in unserem Projekt implementiert, um die Datenbank effizienter zu gestalten. Dabei teilen wir die Daten wöchentlich auf, sodass jede Woche ihre eigene Partition hat. Das hat den Vorteil, dass bei Abfragen nur die relevanten Daten für die angeforderte Woche geladen werden müssen, was die Abfragegeschwindigkeit verbessert und die Gesamtzahl der Lesevorgänge verringert. Dies sorgt für eine bessere Performance, besonders bei einem skalierten Projekt, da durch das Partnersystem, können bis zu Hunderte von Files pro Woche geschickt werden was schnell dazu sorgt das die Datenbank, sehr voll wird.
 				\begin{figure}[h]
 					\centering
 					\includegraphics[width=0.8\linewidth]{partitionierung}
@@ -429,18 +428,18 @@
 					\label{fig:partitionierung}
 				\end{figure}
 				
-				\subsubsection{Redis}
+			\subsubsection{Redis}
 				Die Implementierung von Redis ermöglicht eine globale, persistente Speicherung des Round-Robin-Zählers, der über verschiedene Backend-Instanzen unseres Services hinweg synchronisiert wird. Dies sorgt für Konsistenz bei der Verteilung der Last auf die Minio-Server und verbessert gleichzeitig die Skalierbarkeit und Fehlertoleranz deiner Anwendung. Weil hierdurch kann ein globaler Round-Robin Service funktionieren, falls mehr als ein Server Aktiv ist.
-				\subsubsection{Buckets}
-				Das Ziel war nicht, ein Dropbox-artiges Filesharing zu haben, sondern dass zwei Benutzer Dateien austauschen können. Dies wurde umgesetzt, indem zwei Benutzer sich gegenseitig hinzufügen können und dann ein Bucket zwischen den beiden erstellt wird, in dem die Dateien nur für die beiden gespeichert werden.
+			\subsubsection{Buckets}
+				Das Ziel war nicht, ein Dropbox-ähnliches Filesharing-System zu schaffen, da bei einem solchen Ansatz lediglich ein einziges Bucket benötigt wird, in dem alle Dateien abgelegt werden. Auch wenn dies technisch möglich wäre, wäre es eine einfachere Lösung. Stattdessen wollten wir uns intensiver mit der Funktionsweise von Buckets und dem S3-Modell auseinandersetzen. Daher haben wir entschieden, dass zwei Benutzer sich gegenseitig hinzufügen können und ein separates Bucket für den Austausch ihrer Dateien erstellt wird, sodass die Dateien nur für diese beiden zugänglich sind. Hierbei konnten wir uns nicht nur genauer mit dem kreeieren von Buckets beschäftigen sondern, auch eine Verbindung zwischen einzelne Files und den Buckets erschaffen.
 			\subsection{Schwierigkeiten}
 				Folgenden Schwierigkeiten haben Stattgefunden und wie sie gelöst wurden.
 				
 				\subsubsection{Loadbalacing}
-					Die erste Schwierigkeit war das Loadbalancen von den MinIO instanzen, Es war schwierig die Instanzen miteinander kommunizieren zu lassen. Um das zu lösen haben wir uns für eine andere Methode entschieden, und zwar zwei Shards zu kreieren die jeweils drei MinIO Instanzen beinhalten wobei in einer Shard alle 3 MinIO Instanzen das gleiche beinhalten. Somit wenn eine Ausfällt bleiben noch 2k andere.
+					Die erste Schwierigkeit war das Loadbalancen von den MinIO instanzen, hierbei war es schwierig die einzelnen MinIO-Instanzen Instanzen über nginx kommunizieren zu lassen, dies wurde gelöst in dem die MinIO Instanzen jetzt direkt auf einander zugreifen, durch das Driver System.
 			
 				\subsubsection{Schardaustausch}
-					Die zweite Schwierigkeit war der Austausch zwischen den beide Shards. Denn es kam zu Fehler mitunter den Loadbalancen. Um zu wissen auf welchen Shard gespeichert werden muss, musste einen Counter implementiert werden. Das wurde mit Redis gelöst.
+					Die zweite Schwierigkeit war der Austausch zwischen den beide Shards. Denn es kam zu Fehler mitunter den Loadbalancen. Um zu wissen auf welchen Shard gespeichert werden muss, musste einen Counter implementiert werden, hierbei war aber das Problem das jede Backend-Instanz ein eigenen Counter initialisiert hat, um das zu lösen wurde mit Redis, der Counter im Cache gespeichert.
 				
 				\subsubsection{Buckets zwischen zwei Benutzer}
 					Die dritte Schwierigkeit war, dass wir entschieden haben, dass zwei Benutzer miteinander privat austaushen können. Bei einen einfachen Plattform wo es nur ein Bucket gibt wie Dropbox muss man nicht spezifische Buckets kreieren für 2 Benutzer. Bei Bucket kreieren muss man auf Namen achten, man darf ihn nur maximal 63 Zeichen geben. Um das zu lösen haben wir check Frontend und Backend Benutzername Maximal 8 Zeichen. und Bucketname ist user1-user2-bucket.
