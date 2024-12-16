@@ -32,13 +32,7 @@ public class MinioClientFactory {
     }
 
     public MinioClient getMinioClient(String server) {
-        if (isServerHealthy(server)) {
-            log.info("Minio server {} is healthy", server);
-            return minioClientMap.get(server);
-        } else {
-            log.error("Minio server {} is not healthy", server);
-            return null;
-        }
+        return minioClientMap.get(server);
     }
 
     public boolean isServerHealthy(String server) {
