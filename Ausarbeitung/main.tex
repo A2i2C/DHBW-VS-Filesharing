@@ -296,28 +296,6 @@
 
 \listoffigures
 
-%********************************
-%Tabellenverzeichnis
-%********************************
-\newpage
-\chapter*{Tabellenverzeichnis}
-\addcontentsline{toc}{chapter}{\protect\numberline{}Tabellenverzeichnis}
-
-\listoftables
-
-\newpage
-\chapter*{Abkürzungsverzeichnis}
-\addcontentsline{toc}{chapter}{\protect\numberline{}Abkürzungsverzeichnis}
-\markboth{Abkürzungsverzeichnis}{Abkürzungsverzeichnis} %Benötigt, damit das im header steht
-
-%********************************
-%Abkürzungsverzeichnis
-%********************************
-\begin{acronym}[SOAP]
-	\acro{BA}{Beispiel Acronym}
-\end{acronym}
-
-
 %Speichern des page counters, um bei Literaturverzeichnis weiter zu zählen.
 \newcounter{frontmatterPage}
 \addtocounter{frontmatterPage}{\value{page}} 
@@ -373,13 +351,13 @@
 			\end{figure}
 			
 		\subsection{Interaktion Komponenten}
-			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Upload-Funktion in Abbildung \ref{fig:download_sequenz_diagramm} und die anderen Funktionen wie Benutzerregistrierung und -anmeldung , Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind. Die Entscheidung Upload-File einzeln darzustellen, war weil es unsere Hauptfunktion ist, wo auch am meisten passiert.
+			Die Interaktion zwischen den Komponenten ist in den folgenden Sequenzdiagrammen dargestellt, wobei die Upload-Funktion in Abbildung \ref{fig:upload_sequenz_diagramm} und die anderen Funktionen wie Benutzerregistrierung und -anmeldung , Bucket-Erstellung, Löschen/Download von Dateien in Abbildung \ref{fig:rest_sequenz_diagramm} dargestellt sind. Die Entscheidung Upload-File einzeln darzustellen, war weil es unsere Hauptfunktion ist, wo auch am meisten passiert.
 			
 			\begin{figure}[h]
 				\centering
-				\includegraphics[width=0.95\linewidth]{download\_sequenz\_diagramm}
-				\caption{Sequenz Diagramm für Download}
-				\label{fig:download_sequenz_diagramm}
+				\includegraphics[width=0.95\linewidth]{upload\_sequenz\_diagramm}
+				\caption{Sequenz Diagramm für Upload}
+				\label{fig:upload_sequenz_diagramm}
 			\end{figure}
 			
 			\begin{figure}[h]
@@ -420,7 +398,8 @@
 				\end{figure}
 			
 			\subsubsection{Partitionierung}
-				Wir haben die horizontale Partitionierung in unserem Projekt implementiert, um die Datenbank effizienter zu gestalten. Dabei teilen wir die Daten wöchentlich auf, sodass jede Woche ihre eigene Partition hat. Das hat den Vorteil, dass bei Abfragen nur die relevanten Daten für die angeforderte Woche geladen werden müssen, was die Abfragegeschwindigkeit verbessert und die Gesamtzahl der Lesevorgänge verringert. Dies sorgt für eine bessere Performance, besonders bei einem skalierten Projekt, da durch das Partnersystem, können bis zu Hunderte von Files pro Woche geschickt werden was schnell dazu sorgt das die Datenbank, sehr voll wird.
+				Wir haben die horizontale Partitionierung in unserem Projekt implementiert, um die Datenbank effizienter zu gestalten \cite{alsultanny2010database}. Dabei teilen wir die Daten wöchentlich auf, sodass jede Woche ihre eigene Partition hat. Das hat den Vorteil, dass bei Abfragen nur die relevanten Daten für die angeforderte Woche geladen werden müssen, was die Abfragegeschwindigkeit verbessert und die Gesamtzahl der Lesevorgänge verringert. Dies sorgt für eine bessere Performance, besonders bei einem skalierten Projekt, da durch das Partnersystem, können bis zu Hunderte von Files pro Woche geschickt werden was schnell dazu sorgt das die Datenbank, sehr voll wird. Die Partitionierung ist in Abbildung \ref{fig:partitionierung} dargestellt.
+				
 				\begin{figure}[h]
 					\centering
 					\includegraphics[width=0.8\linewidth]{partitionierung}
@@ -429,7 +408,8 @@
 				\end{figure}
 				
 			\subsubsection{Redis}
-				Die Implementierung von Redis ermöglicht eine globale, persistente Speicherung des Round-Robin-Zählers, der über verschiedene Backend-Instanzen unseres Services hinweg synchronisiert wird. Dies sorgt für Konsistenz bei der Verteilung der Last auf die Minio-Server und verbessert gleichzeitig die Skalierbarkeit und Fehlertoleranz deiner Anwendung. Weil hierdurch kann ein globaler Round-Robin Service funktionieren, falls mehr als ein Server Aktiv ist.
+				Die Implementierung von Redis ermöglicht eine globale, persistente \cite{eddelbuettel2022brief} Speicherung des Round-Robin-Zählers (Caching), der über verschiedene Backend-Instanzen unseres Services hinweg synchronisiert wird. Dies sorgt für Konsistenz bei der Verteilung der Last auf die Minio-Server und verbessert gleichzeitig die Skalierbarkeit und Fehlertoleranz deiner Anwendung. Weil hierdurch kann ein globaler Round-Robin Service funktionieren, falls mehr als ein Server Aktiv ist.
+				
 			\subsubsection{Buckets}
 				Das Ziel war nicht, ein Dropbox-ähnliches Filesharing-System zu schaffen, da bei einem solchen Ansatz lediglich ein einziges Bucket benötigt wird, in dem alle Dateien abgelegt werden. Auch wenn dies technisch möglich wäre, wäre es eine einfachere Lösung. Stattdessen wollten wir uns intensiver mit der Funktionsweise von Buckets und dem S3-Modell auseinandersetzen. Daher haben wir entschieden, dass zwei Benutzer sich gegenseitig hinzufügen können und ein separates Bucket für den Austausch ihrer Dateien erstellt wird, sodass die Dateien nur für diese beiden zugänglich sind. Hierbei konnten wir uns nicht nur genauer mit dem kreeieren von Buckets beschäftigen sondern, auch eine Verbindung zwischen einzelne Files und den Buckets erschaffen.
 			\subsection{Schwierigkeiten}
@@ -445,7 +425,7 @@
 					Die dritte Schwierigkeit war, dass wir entschieden haben, dass zwei Benutzer miteinander privat austaushen können. Bei einen einfachen Plattform wo es nur ein Bucket gibt wie Dropbox muss man nicht spezifische Buckets kreieren für 2 Benutzer. Bei Bucket kreieren muss man auf Namen achten, man darf ihn nur maximal 63 Zeichen geben. Um das zu lösen haben wir check Frontend und Backend Benutzername Maximal 8 Zeichen. und Bucketname ist user1-user2-bucket.
 			
 	\section{Mögliche Alternativen}
-		Obwohl es natürlich Alternativen in der Programmierung gibt, wie z.B. weniger oder mehr Metadaten für die verschiedenen benötigten Informationen zu speichern, wäre eine Alternative in größerem Umfang andere Open Source S3-kompatible Software wie Ceph oder GlusterFS zu verwenden. Anstelle von S3 könnte auch Hadoop HDFS (Hadoop Distributed File System) verwendet werden. Dies ist ebenfalls ein weit verbreitetes verteiltes Dateisystem, wird aber mehr im Bereich Big Data und Analytics eingesetzt. ist aber im Gegensatz zu den anderen nicht S3-kompatibel.
+		Obwohl es natürlich Alternativen in der Programmierung gibt, wie z.B. weniger oder mehr Metadaten für die verschiedenen benötigten Informationen zu speichern, wäre eine Alternative in größerem Umfang andere Open Source S3-kompatible Software wie Ceph oder GlusterFS zu verwenden. Anstelle von S3 könnte auch Hadoop HDFS (Hadoop Distributed File System) verwendet werden. Immer mehr Anwendungen nutzen Hadoop-Cluster, da Organisationen ein einfaches und effizientes Modell entdeckt haben, das hervorragend in verteilten Umgebungen funktioniert. \cite{ghazi2015hadoop} Dieses Modell wird vor allem im Bereich Big Data und Analytics eingesetzt, ist jedoch im Gegensatz zu den anderen genannten Lösungen nicht S3-kompatibel.
 	
 \chapter{Reflektion}
 	Die folgenden Überlegungen zeigen, was wir anders machen können und was die größten Herausforderungen und ihre Lösungen sind.
@@ -469,7 +449,7 @@
 
 %Quellenverzeichnis
 \renewcommand{\refname}{Literaturverzeichnis}
-\bibliographystyle{/usr/local/texlive/2024/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bs}
+\bibliographystyle{/usr/local/texlive/2024/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst}
 \bibliography{./sources}
 
 
