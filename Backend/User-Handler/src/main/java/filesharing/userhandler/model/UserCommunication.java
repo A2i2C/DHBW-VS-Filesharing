@@ -9,6 +9,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "UserCommunication")
 public class UserCommunication {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

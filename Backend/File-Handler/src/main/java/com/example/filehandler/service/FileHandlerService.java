@@ -47,7 +47,8 @@ public class FileHandlerService {
     }
 
     public void uploadFile(String bucketName, FileHandlerFileRequest fileHandlerFileRequest, Long userId) {
-        List<String> targetServers = fileDistributionService.getMinioServer();
+        List<String> targetServers = fileDistributionService.getMinioServer(); //Get Minio Server
+        //Initialize Minio Server with http://server:9000
         List<String> initializedServer = minioClientFactory.initializeMinioClients(targetServers);
 
         //Get MetaData from File
@@ -57,7 +58,7 @@ public class FileHandlerService {
 
         if (Objects.equals(filename, objectName)) {
             log.info("File '{}' already exists in bucket '{}'", objectName, bucketName);
-            return;
+            throw new IllegalStateException("File already exists in bucket");
         }
         try {
             for (String server : initializedServer) {
