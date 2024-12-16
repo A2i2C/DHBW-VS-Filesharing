@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "FileDetails")
+@Table(name = "FileDetails", schema="vs_filesharing")
 public class FileDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,4 +17,5 @@ public class FileDetails {
     private boolean shardeins;
     private boolean shardzwei;
     private int yearweek;
+    private Long userId;
 }

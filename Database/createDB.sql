@@ -33,21 +33,11 @@ CREATE TABLE FileDetails (
     shardzwei boolean,
     yearweek INT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT,
     PRIMARY KEY (file_id, yearweek)
 )
 PARTITION BY RANGE (yearweek) (
     PARTITION p2024_50 VALUES LESS THAN (202451),
     PARTITION p2024_51 VALUES LESS THAN (202452),
     PARTITION p2024_52 VALUES LESS THAN (202501));
-
-CREATE TABLE FileUser (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    file_id_user INT NOT NULL,
-    user_id INT NOT NULL,
-    CONSTRAINT fk_file_user_user
-        FOREIGN KEY (user_id)
-        REFERENCES User(user_id)
-            ON DELETE CASCADE
-            ON UPDATE CASCADE
-);
 
