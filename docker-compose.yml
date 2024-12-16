@@ -27,6 +27,8 @@ services:
       - MYSQL_ROOT_PASSWORD=${MARIA_DB_PASSWORD}
       - MYSQL_DATABASE=vs_filesharing
       - MYSQL_USER=vs_filesharing
+    volumes:
+      - ./Database/data:/var/lib/mysql
     ports:
       - "3306:3306"
     networks:
