@@ -47,6 +47,15 @@ export class FileCardComponent implements OnInit, OnDestroy {
 
   uploadFile(selectedFile: File): void {
     this.errorMessage = '';
+
+    // Check if the file name already exists in the files array
+    const fileExists = this.files.some(file => file.name === selectedFile.name);
+    if (fileExists) {
+      console.error('File with the same name already exists:', selectedFile.name);
+      this.errorMessage = 'A file with the same name already exists.';
+      return;
+    }
+
     this.fileService.uploadFile(selectedFile).subscribe({
       next: () => {
         console.log('Uploaded file successfully: ' + selectedFile.name );
