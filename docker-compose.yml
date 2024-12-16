@@ -29,8 +29,6 @@ services:
       - MYSQL_USER=vs_filesharing
     ports:
       - "3306:3306"
-    volumes:
-      - ./Database/data:/var/lib/mysql
     networks:
       - app-network
 

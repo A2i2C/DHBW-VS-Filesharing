@@ -68,6 +68,8 @@ export class UserPanelComponent implements OnInit{
               next: () => {
                 console.log(`Bucket ${bucketName} created successfully.`);
                 this.users.push({ username: username, bucketname: bucketName });
+                // Clear the input field
+                this.searched_user.reset();
               },
               error: (err: any) => {
                 this.errorMessage.set("Couldn't start file converstaion with user " + username);
