@@ -430,10 +430,9 @@
 				\end{figure}
 				
 				\subsubsection{Redis}
-				
+				Die Implementierung von Redis ermöglicht eine globale, persistente Speicherung des Round-Robin-Zählers, der über verschiedene Backend-Instanzen unseres Services hinweg synchronisiert wird. Dies sorgt für Konsistenz bei der Verteilung der Last auf die Minio-Server und verbessert gleichzeitig die Skalierbarkeit und Fehlertoleranz deiner Anwendung. Weil hierdurch kann ein globaler Round-Robin Service funktionieren, falls mehr als ein Server Aktiv ist.
 				\subsubsection{Buckets}
-					Das Ziel war nicht, ein Dropbox-artiges Filesharing zu haben, sondern dass zwei Benutzer Dateien austauschen können. Dies wurde umgesetzt, indem zwei Benutzer sich gegenseitig hinzufügen können und dann ein Bucket zwischen den beiden erstellt wird, in dem die Dateien nur für die beiden gespeichert werden.
-			
+				Das Ziel war nicht, ein Dropbox-artiges Filesharing zu haben, sondern dass zwei Benutzer Dateien austauschen können. Dies wurde umgesetzt, indem zwei Benutzer sich gegenseitig hinzufügen können und dann ein Bucket zwischen den beiden erstellt wird, in dem die Dateien nur für die beiden gespeichert werden.
 			\subsection{Schwierigkeiten}
 				Folgenden Schwierigkeiten haben Stattgefunden und wie sie gelöst wurden.
 				

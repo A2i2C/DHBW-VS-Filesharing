@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "FileUser")
 public class FileUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

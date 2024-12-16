@@ -2,6 +2,7 @@ package com.example.filehandler.service;
 
 import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -12,11 +13,7 @@ import java.util.Map;
 @Component
 public class MinioClientFactory {
     private final Map<String, MinioClient> minioClientMap = new HashMap<>();
-    private final MinioHealthCheckService minioHealthCheckService;
-
-    public MinioClientFactory(MinioHealthCheckService minioHealthCheckService) {
-        this.minioHealthCheckService = minioHealthCheckService;
-    }
+    private final OkHttpClient httpClient = new OkHttpClient();
 
     public List<String> initializeMinioClients(List<String> targetServers) {
         targetServers.forEach(server -> {
@@ -35,12 +32,25 @@ public class MinioClientFactory {
     }
 
     public MinioClient getMinioClient(String server) {
-        if (minioHealthCheckService.isServerHealthy(server)) {
+        if (isServerHealthy(server)) {
             log.info("Minio server {} is healthy", server);
             return minioClientMap.get(server);
         } else {
             log.error("Minio server {} is not healthy", server);
             return null;
+        }
+    }
+
+    public boolean isServerHealthy(String server) {
+        try {
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url("http://" + server + ":9000/minio/health/ready")
+                    .build();
+            okhttp3.Response response = httpClient.newCall(request).execute();
+            return response.isSuccessful();
+        } catch (Exception e) {
+            log.error("Error occurred while checking health of Minio server '{}':", server, e);
+            return false;
         }
     }
 }

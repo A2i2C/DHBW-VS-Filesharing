@@ -1,15 +1,13 @@
 package com.example.filehandler.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "FileDetails")
 public class FileDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
